@@ -2,6 +2,7 @@
 
 string description = "";
 FileManager.Initialize();
+FileManager.UploadFiles();
 while (true)
 {
     Console.WriteLine("Share your thought!");

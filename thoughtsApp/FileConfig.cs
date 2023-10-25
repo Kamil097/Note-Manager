@@ -9,6 +9,6 @@ namespace thoughtsApp
     public static class FileConfig
     {
         public static string UserPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        public static string FullPath = Path.Combine(UserPath, "Desktop/Thoughts");
+        public static string FullPath = Path.Combine(UserPath, "Desktop\\Thoughts");
     }
 }
