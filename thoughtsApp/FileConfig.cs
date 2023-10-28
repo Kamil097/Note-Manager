@@ -10,5 +10,7 @@ namespace thoughtsApp
     {
         public static string UserPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         public static string FullPath = Path.Combine(UserPath, "Desktop\\Thoughts");
-    }
+		public static string folderId = "12Cy_QIkTUjqD-Gqg7jHCa2RERpMGj3m0";
+		public static string credentialsPath = "credentials.json";
+	}
 }
