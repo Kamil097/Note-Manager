@@ -13,7 +13,8 @@ namespace thoughtsApp
 		{
 			string text = Console.ReadLine();
 
-			Verifiers.ExitConditions(text);
+			if (Verifiers.ExitConditions(text))
+				return false;
 
 			FileManager.SendNewNote(text,FileConfig.folderId);
 			Console.Clear();
@@ -36,7 +37,7 @@ namespace thoughtsApp
 		public static bool ThoughtListLoop(string folderId, List<(string name, string id)> list) 
 		{
 			string text = Console.ReadLine();
-			if (!Verifiers.ExitConditions(text))
+			if (Verifiers.ExitConditions(text))
 			{
 				return false;
 			}

@@ -24,12 +24,12 @@ namespace thoughtsApp
 		public static bool ExitConditions(string text)
 		{
 			if (text.Equals("x", StringComparison.OrdinalIgnoreCase))
-				return false;
+				return true;
 
 			if (text.Equals("xd", StringComparison.OrdinalIgnoreCase))
 				Environment.Exit(0);
 
-			return true;
+			return false;
 		}
 	}
 }

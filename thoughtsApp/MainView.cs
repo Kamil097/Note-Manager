@@ -67,7 +67,7 @@ namespace thoughtsApp
 				Console.WriteLine(text);
 				response = Console.ReadLine();
 			}
-			while (Verifiers.ExitConditions(response));
+			while (!Verifiers.ExitConditions(response));
 		}
 	}
 }
