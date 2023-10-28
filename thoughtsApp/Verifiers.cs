@@ -21,5 +21,15 @@ namespace thoughtsApp
 
 			return true;
 		}
+		public static bool ExitConditions(string text)
+		{
+			if (text.Equals("x", StringComparison.OrdinalIgnoreCase))
+				return false;
+
+			if (text.Equals("xd", StringComparison.OrdinalIgnoreCase))
+				Environment.Exit(0);
+
+			return true;
+		}
 	}
 }

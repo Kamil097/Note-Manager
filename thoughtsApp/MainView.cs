@@ -8,7 +8,6 @@ namespace thoughtsApp
 {
 	public static class MainView
 	{
-		public static int mainWindowOptionsLength = 3;
 		public static int MainWindowOptionListLoop()
 		{
 			int option = 0;
@@ -18,10 +17,10 @@ namespace thoughtsApp
 				Console.WriteLine("1. Upload your thought.");
 				Console.WriteLine("2. View thoughts");
 				Console.WriteLine("3. Exit program");
-				option = MainViewLogic.MainWindowLoopCondition();
+				option = MainViewLogic.MainWindowLoopCondition(3);
 			}
-			while (option==0);
-			
+			while (option == 0);
+
 			return option;
 		}
 		public static void ThoughtLoop()
@@ -37,6 +36,38 @@ namespace thoughtsApp
 				Console.WriteLine("Share your thought below: \n\n\n");
 			}
 			while (MainViewLogic.ThoughtLoopCondition());
+		}
+		public static void DriveExplorer(string folderId)
+		{
+			var list = FileManager.GetNotesInfoFromDrive(folderId);
+			var length = list.Count();
+			do
+			{
+				Console.Clear();
+				Console.WriteLine("List of current notes.");
+				Console.WriteLine("----------------------");
+				for(int i=0; i<length; i++)
+				{
+					Console.WriteLine($"{i+1} {list[i].name}");
+				}
+			}
+			while (MainViewLogic.ThoughtListLoop(folderId, list));
+
+			
+		}
+		public static void FileViewer((string name, string id) fileInfo,string folderId)
+		{
+			var text = FileManager.GetFileText(fileInfo.id);
+			string response = "";
+
+			do
+			{
+				Console.Clear();
+				Console.WriteLine($"Notatka: {fileInfo.name}");
+				Console.WriteLine(text);
+				response = Console.ReadLine();
+			}
+			while (Verifiers.ExitConditions(response));
 		}
 	}
 }

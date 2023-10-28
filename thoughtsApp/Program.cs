@@ -10,6 +10,9 @@ while (true)
     {
         case 1: 
             MainView.ThoughtLoop();
-        break;
+            break;
+        case 2:
+            MainView.DriveExplorer(FileConfig.folderId);
+            break;
     }
 }
