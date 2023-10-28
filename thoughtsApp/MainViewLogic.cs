@@ -8,7 +8,7 @@ namespace thoughtsApp
 {
 	public static class MainViewLogic
 	{
-		public static bool ThoughtLoop()
+		public static bool ThoughtLoopCondition()
 		{
 			string text = Console.ReadLine();
 
@@ -22,7 +22,7 @@ namespace thoughtsApp
 			Console.Clear();
 			return true;
 		}
-		public static int MainWindowLoop()
+		public static int MainWindowLoopCondition()
 		{
 			
 			string text = Console.ReadLine();

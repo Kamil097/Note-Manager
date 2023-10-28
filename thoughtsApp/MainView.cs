@@ -18,7 +18,7 @@ namespace thoughtsApp
 				Console.WriteLine("1. Upload your thought.");
 				Console.WriteLine("2. View thoughts");
 				Console.WriteLine("3. Exit program");
-				option = MainViewLogic.MainWindowLoop();
+				option = MainViewLogic.MainWindowLoopCondition();
 			}
 			while (option==0);
 			
@@ -36,7 +36,7 @@ namespace thoughtsApp
 				Console.WriteLine("----------------------------\n");
 				Console.WriteLine("Share your thought below: \n\n\n");
 			}
-			while (MainViewLogic.ThoughtLoop());
+			while (MainViewLogic.ThoughtLoopCondition());
 		}
 	}
 }
