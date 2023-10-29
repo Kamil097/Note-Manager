@@ -14,5 +14,8 @@ while (true)
         case 2:
             MainView.DriveExplorer(FileConfig.folderId);
             break;
+        case 3:
+            MainView.RandomFileViewer(FileConfig.folderId);
+            break;
     }
 }

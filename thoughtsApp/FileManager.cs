@@ -78,7 +78,8 @@ namespace thoughtsApp
 				}
 			}
 		}
-		public static async void SendNewNote(string description, string folderId) 
+		public static void dupa() { }
+		public static async Task SendNewNote(string description, string folderId) 
 		{
 			string name = GetDateTimeName();
 			var service = googleService();
@@ -105,6 +106,7 @@ namespace thoughtsApp
 					Console.WriteLine($"File with id: {request.ResponseBody.Id} has been uploaded.");
 				}
 			}
+			await Task.CompletedTask;
 		}
 		public static List<(string name, string id)> GetNotesInfoFromDrive(string folderId) 
 		{
@@ -127,23 +129,23 @@ namespace thoughtsApp
 			var service = googleService();
 			var requestFile = service.Files.Get(fileId);
 			var stream = new MemoryStream();
-			requestFile.MediaDownloader.ProgressChanged += (Google.Apis.Download.IDownloadProgress progress) =>
-			{
-				switch (progress.Status)
-				{
-					case Google.Apis.Download.DownloadStatus.Downloading:
-						Console.WriteLine(progress.BytesDownloaded);
-						break;
+			//requestFile.MediaDownloader.ProgressChanged += (Google.Apis.Download.IDownloadProgress progress) =>
+			//{
+			//	switch (progress.Status)
+			//	{
+			//		case Google.Apis.Download.DownloadStatus.Downloading:
+			//			Console.WriteLine(progress.BytesDownloaded);
+			//			break;
 
-					case Google.Apis.Download.DownloadStatus.Completed:
-						Console.WriteLine("Download complete.");
-						break;
+			//		case Google.Apis.Download.DownloadStatus.Completed:
+			//			Console.WriteLine("Download complete.");
+			//			break;
 
-					case Google.Apis.Download.DownloadStatus.Failed:
-						Console.WriteLine("Download failed.");
-						break;
-				}
-			};
+			//		case Google.Apis.Download.DownloadStatus.Failed:
+			//			Console.WriteLine("Download failed.");
+			//			break;
+			//	}
+			//};
 			requestFile.Download(stream);
 			stream.Position = 0;
 			StreamReader reader = new StreamReader(stream);

@@ -10,24 +10,19 @@ namespace thoughtsApp
 	{
 		public static bool optionWerifier(int optionsLimit, string option) 
 		{
-			if (option.Length != 1)
-				return false;
+			if (int.TryParse(option, out int number) && number <= optionsLimit && number > 0)
+				return true;
 
-			if (!int.TryParse(option, out int number))
-				return false;
+			return false;
 
-			if (number > optionsLimit || number < 1)
-				return false;
-
-			return true;
 		}
 		public static bool ExitConditions(string text)
 		{
-			if (text.Equals("x", StringComparison.OrdinalIgnoreCase))
-				return true;
-
 			if (text.Equals("xd", StringComparison.OrdinalIgnoreCase))
 				Environment.Exit(0);
+
+			if (text.Equals("x", StringComparison.OrdinalIgnoreCase))
+				return true;
 
 			return false;
 		}
