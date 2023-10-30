@@ -17,5 +17,16 @@ while (true)
         case 3:
             MainView.RandomFileViewer(FileConfig.folderId);
             break;
+        case 4:
+          
+            Console.Clear();
+            Console.WriteLine("Downloading ...");
+			var result = FileManager.DownloadAllNotes(FileConfig.folderId);
+            Console.Clear();
+            Console.WriteLine($"Result:\n{result}");
+            Console.ReadLine();
+            break;
+
+
     }
 }

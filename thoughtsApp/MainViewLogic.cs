@@ -34,6 +34,8 @@ namespace thoughtsApp
 		{
 			
 			string text = Console.ReadLine();
+			if (Verifiers.ExitConditions(text))
+				return 0;
 
 			if (!Verifiers.optionWerifier(optionsCount, text))
 				return 0;
@@ -55,7 +57,7 @@ namespace thoughtsApp
 			
 			int.TryParse(text, out int option);
 
-			MainView.FileViewer(list,option, folderId);
+			MainView.FileViewer(list,option-1, folderId);
 			return true;
 		}
 		//For loop to continue, we have to give FALSE, because it's reverted 

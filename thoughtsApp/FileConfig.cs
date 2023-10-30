@@ -11,6 +11,11 @@ namespace thoughtsApp
         public static readonly string UserPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         public static readonly string FullPath = Path.Combine(UserPath, "Desktop\\Thoughts");
 		public static readonly string folderId = "12Cy_QIkTUjqD-Gqg7jHCa2RERpMGj3m0";
-		public static readonly string credentialsPath = "credentials.json";
+		//public static readonly string credentialsPath = "credentials.json";
+		public static readonly string workingDirectory = Environment.CurrentDirectory;
+		public static readonly string projectDirectory = Directory.GetParent(workingDirectory).Parent.Parent.FullName;
+		public static readonly string mergedTextPath = Path.Combine(projectDirectory, @"FileFolder/mergedText.txt");
+		public static readonly string credentialsPath = Path.Combine(projectDirectory, @"ConfigFiles/credentials.json");
+		
 	}
 }

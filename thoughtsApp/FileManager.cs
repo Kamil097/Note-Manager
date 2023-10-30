@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
@@ -78,7 +79,6 @@ namespace thoughtsApp
 				}
 			}
 		}
-		public static void dupa() { }
 		public static async Task SendNewNote(string description, string folderId) 
 		{
 			string name = GetDateTimeName();
@@ -118,7 +118,6 @@ namespace thoughtsApp
 			var files = request.Execute();
 			foreach (var file in files.Files)
 			{
-				var fileId = file.Id;
 				pliki.Add((file.Name,file.Id));
 			}
 
@@ -129,28 +128,38 @@ namespace thoughtsApp
 			var service = googleService();
 			var requestFile = service.Files.Get(fileId);
 			var stream = new MemoryStream();
-			//requestFile.MediaDownloader.ProgressChanged += (Google.Apis.Download.IDownloadProgress progress) =>
-			//{
-			//	switch (progress.Status)
-			//	{
-			//		case Google.Apis.Download.DownloadStatus.Downloading:
-			//			Console.WriteLine(progress.BytesDownloaded);
-			//			break;
-
-			//		case Google.Apis.Download.DownloadStatus.Completed:
-			//			Console.WriteLine("Download complete.");
-			//			break;
-
-			//		case Google.Apis.Download.DownloadStatus.Failed:
-			//			Console.WriteLine("Download failed.");
-			//			break;
-			//	}
-			//};
 			requestFile.Download(stream);
 			stream.Position = 0;
 			StreamReader reader = new StreamReader(stream);
 			var tekst = reader.ReadToEnd();
 			return tekst;
+		}
+		public static string DownloadAllNotes(string folderId)
+		{
+			var service = googleService();
+			var request = service.Files.List();
+			request.Q = $"'{folderId}' in parents";
+			var files =  request.Execute();
+
+			var combinedText = new StringBuilder();
+
+			foreach (var file in files.Files)
+			{
+				var requestFile = service.Files.Get(file.Id);
+				using (var stream = new MemoryStream())
+				{
+					requestFile.Download(stream);
+					stream.Position = 0;
+					using (StreamReader reader = new StreamReader(stream))
+					{
+						string fileText = reader.ReadToEnd();
+						combinedText.Append(file.Name+"\n");
+						combinedText.Append(fileText+"\n");
+					}
+				}
+			}
+			File.AppendAllText(FileConfig.mergedTextPath, combinedText.ToString());
+			return combinedText.ToString();
 		}
 
 	}

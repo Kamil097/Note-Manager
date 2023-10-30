@@ -21,7 +21,8 @@ namespace thoughtsApp
 				Console.WriteLine("1. Upload your thought.");
 				Console.WriteLine("2. View thoughts explorer.");
 				Console.WriteLine("3. View random thought.");
-				option = MainViewLogic.MainWindowLoopCondition(3);
+				Console.WriteLine("4. View everything.");
+				option = MainViewLogic.MainWindowLoopCondition(4);
 			}
 			while (option == 0);
 
