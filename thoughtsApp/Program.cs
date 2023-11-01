@@ -4,6 +4,7 @@ FileManager.Initialize();
 
 while (true)
 {
+    
     int option = MainView.MainWindowOptionListLoop();
 
 	switch (option) 
@@ -18,15 +19,8 @@ while (true)
             MainView.RandomFileViewer(FileConfig.folderId);
             break;
         case 4:
-          
-            Console.Clear();
-            Console.WriteLine("Downloading ...");
-			var result = FileManager.DownloadAllNotes(FileConfig.folderId);
-            Console.Clear();
-            Console.WriteLine($"Result:\n{result}");
-            Console.ReadLine();
+            MainView.OperateOnNotes(FileConfig.folderId);
             break;
-
-
+        default: continue;
     }
 }

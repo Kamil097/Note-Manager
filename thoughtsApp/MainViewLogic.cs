@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using static Google.Apis.Requests.BatchRequest;
@@ -30,20 +31,18 @@ namespace thoughtsApp
 			return true;
 		}
 		//Loop that handles main window options
-		public static int MainWindowLoopCondition(int optionsCount)
+		public static(int option, bool loop) OptionsLoopCondition(int optionsCount)
 		{
 			
 			string text = Console.ReadLine();
 			if (Verifiers.ExitConditions(text))
-				return 0;
+				return (0,false);
 
 			if (!Verifiers.optionWerifier(optionsCount, text))
-				return 0;
+				return (0,true);
 			
 			int.TryParse(text, out int option);
-			return option;
-			
-			
+			return (option,false);	
 		}
 		//Loop that handles explorer
 		public static bool ThoughtListLoop(string folderId, List<(string name, string id)> list) 
@@ -60,7 +59,7 @@ namespace thoughtsApp
 			MainView.FileViewer(list,option-1, folderId);
 			return true;
 		}
-		//For loop to continue, we have to give FALSE, because it's reverted 
+		//For loop to continue, we have to give TRUE
 		public static (bool loop,int note) FileViewerLoop(int note, int limit)
 		{
 			
@@ -79,17 +78,49 @@ namespace thoughtsApp
 					note += 1;
 				}
 			}
-			return (!Verifiers.ExitConditions(text), note); 
+			return (!Verifiers.ExitConditions(text), note);
 		}
-		public static (bool loop, int note) RandomThoughtLoop(int note, int limit) 
+		public static (bool loop, int note) RandomThoughtLoop(int note, int limit)
 		{
 			string text = Console.ReadLine();
 			if (text.Equals("next", StringComparison.OrdinalIgnoreCase))
 			{
 				note = new Random().Next(0, limit);
 			}
-			
+
 			return (!Verifiers.ExitConditions(text), note);
+		}
+		//Key is note name, and list represents sentences of such note with given expression.
+		public static Dictionary<string, List<string>> GetExpressionSentences(string expression) 
+		{
+			Dictionary <string,List<string>> dict = new Dictionary<string,List<string>>();
+			string line;
+			string noteName="";
+			using (StreamReader stream = new StreamReader(FileConfig.mergedTextPath))
+			{
+				while ((line = stream.ReadLine()) != null)
+				{
+					if (line.StartsWith(FileConfig.noteCode, StringComparison.OrdinalIgnoreCase))
+					{
+						noteName = line.Substring(FileConfig.noteCode.Length - 1); // we take name without code
+					}
+					else
+					{
+						List<string> sentences = line.Split('.').ToList();
+						List<string> exprSentences = new List<string>();
+						foreach (var sentence in sentences)
+						{
+							if (sentence.Contains(expression))
+							{
+								exprSentences.Add(sentence);
+							}
+						}
+						if(exprSentences.Count > 0) 
+						dict.Add(noteName, exprSentences);
+					}
+				}
+			}
+			return dict;
 		}
 	}
 }

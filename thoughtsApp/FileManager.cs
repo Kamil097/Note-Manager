@@ -153,12 +153,12 @@ namespace thoughtsApp
 					using (StreamReader reader = new StreamReader(stream))
 					{
 						string fileText = reader.ReadToEnd();
-						combinedText.Append(file.Name+"\n");
+						combinedText.Append(FileConfig.noteCode + file.Name+"\n");
 						combinedText.Append(fileText+"\n");
 					}
 				}
 			}
-			File.AppendAllText(FileConfig.mergedTextPath, combinedText.ToString());
+			File.WriteAllText(FileConfig.mergedTextPath, combinedText.ToString());
 			return combinedText.ToString();
 		}
 

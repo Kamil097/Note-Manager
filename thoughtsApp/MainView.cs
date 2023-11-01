@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace thoughtsApp
 		public delegate bool LoopDelegate();
 		public static int MainWindowOptionListLoop()
 		{
-			int option = 0;
+			(int option, bool loop) choice = (0,true);
 			do
 			{
 				Console.Clear();
@@ -22,11 +23,11 @@ namespace thoughtsApp
 				Console.WriteLine("2. View thoughts explorer.");
 				Console.WriteLine("3. View random thought.");
 				Console.WriteLine("4. View everything.");
-				option = MainViewLogic.MainWindowLoopCondition(4);
+				choice = MainViewLogic.OptionsLoopCondition(4);
 			}
-			while (option == 0);
+			while (choice.loop);
 
-			return option;
+			return choice.option;
 		}
 		public static void ThoughtLoop()
 		{
@@ -90,6 +91,63 @@ namespace thoughtsApp
 				continuation = MainViewLogic.FileViewerLoop(continuation.note, list.Count-1);
 			}
 			while (continuation.loop);
+		}
+		public static void OperateOnNotes(string folderId) 
+		{
+			(int option, bool loop) choice = (0, true);
+			do {
+				Console.Clear();
+				Console.WriteLine("1. Update downloaded data");
+				Console.WriteLine("2. List sentences with given expression.");
+				Console.WriteLine("3. Some other option.");
+				Console.WriteLine("4. Some other option.");
+				choice = MainViewLogic.OptionsLoopCondition(4);
+			}
+			while (choice.loop);
+
+			//If Exitconditions is true, option == 0, default case is activated and you go back
+			switch (choice.option)
+			{
+				case 1:
+					FileManager.DownloadAllNotes(FileConfig.folderId);
+					break;
+				case 2:
+					ViewExpressionSentences();
+					break;
+				case 3:
+					Console.WriteLine("Trzeci");
+					Console.ReadLine();
+					break;
+				case 4:
+					Console.WriteLine("Default");
+					Console.ReadLine();
+					break;
+
+				default:
+
+					break;
+			}
+		}
+		public static void ViewExpressionSentences()
+		{
+			do
+			{
+				Console.Clear();
+				Console.WriteLine("Type in expression: ");
+				string expression = Console.ReadLine();
+				var sentences = MainViewLogic.GetExpressionSentences(expression);
+				foreach (var sentence in sentences)
+				{
+					Console.WriteLine(sentence.Key);
+					int sentenceNo = 1;
+					foreach (var line in sentence.Value)
+					{
+						Console.WriteLine(sentenceNo + ". " + line + ".");
+					}
+				}
+				Console.ReadLine();
+			}
+			while (false);
 		}
 		
 	}
