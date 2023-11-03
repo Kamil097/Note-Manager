@@ -6,25 +6,25 @@ using System.Threading.Tasks;
 
 namespace thoughtsApp
 {
-	public static class Verifiers
-	{
-		public static bool optionWerifier(int optionsLimit, string option) 
-		{
-			if (int.TryParse(option, out int number) && number <= optionsLimit && number > 0)
-				return true;
+    public static class Verifiers
+    {
+        public static bool optionWerifier(int optionsLimit, string option)
+        {
+            if (int.TryParse(option, out int number) && number <= optionsLimit && number > 0)
+                return true;
 
-			return false;
+            return false;
 
-		}
-		public static bool ExitConditions(string text)
-		{
-			if (text.Equals("xd", StringComparison.OrdinalIgnoreCase))
-				Environment.Exit(0);
+        }
+        public static bool ExitConditions(string text)
+        {
+            if (text.Equals("xd", StringComparison.OrdinalIgnoreCase))
+                Environment.Exit(0);
 
-			if (text.Equals("x", StringComparison.OrdinalIgnoreCase))
-				return true;
+            if (text.Equals("x", StringComparison.OrdinalIgnoreCase))
+                return true;
 
-			return false;
-		}
-	}
+            return false;
+        }
+    }
 }

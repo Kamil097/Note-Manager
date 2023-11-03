@@ -4,12 +4,12 @@ FileManager.Initialize();
 
 while (true)
 {
-    
+
     int option = MainView.MainWindowOptionListLoop();
 
-	switch (option) 
+    switch (option)
     {
-        case 1: 
+        case 1:
             MainView.ThoughtLoop();
             break;
         case 2:
