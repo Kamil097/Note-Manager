@@ -2,10 +2,12 @@
 using Google.Apis.Drive.v3;
 using Google.Apis.Services;
 using Google.Apis.Upload;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -134,14 +136,17 @@ namespace thoughtsApp
 			var tekst = reader.ReadToEnd();
 			return tekst;
 		}
-		public static string DownloadAllNotes(string folderId)
+		
+		public static void DownloadAllNotesJson(string folderId)
 		{
+			JObject data = GetJsonObject(FileConfig.combinedNotes);
+			JArray array = (JArray)data["data"];
+			
+
 			var service = googleService();
 			var request = service.Files.List();
 			request.Q = $"'{folderId}' in parents";
-			var files =  request.Execute();
-
-			var combinedText = new StringBuilder();
+			var files = request.Execute();
 
 			foreach (var file in files.Files)
 			{
@@ -153,14 +158,32 @@ namespace thoughtsApp
 					using (StreamReader reader = new StreamReader(stream))
 					{
 						string fileText = reader.ReadToEnd();
-						combinedText.Append(FileConfig.noteCode + file.Name+"\n");
-						combinedText.Append(fileText+"\n");
+						JObject newNote = createNoteObj(file.Name,fileText);
+						array.Add(newNote);
 					}
 				}
 			}
-			File.WriteAllText(FileConfig.mergedTextPath, combinedText.ToString());
-			return combinedText.ToString();
+			File.WriteAllText(FileConfig.combinedNotes, data.ToString());		
 		}
+		public static JObject createNoteObj(string name, string text) 
+		{
+			JObject newNote = new JObject
+			{
+				{ "name", name },
+				{ "text", text }
+			};
+			return newNote;
+		}
+		public static JObject GetJsonObject(string jsonResourceName)
+		{
 
+			using (StreamReader reader = new StreamReader(jsonResourceName))
+			{
+
+				string content = reader.ReadToEnd();
+				JObject jobject = JObject.Parse(content);
+				return jobject;
+			}
+		}
 	}
 }

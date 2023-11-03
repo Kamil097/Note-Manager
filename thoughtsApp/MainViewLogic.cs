@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualBasic.FileIO;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -95,32 +96,25 @@ namespace thoughtsApp
 		{
 			Dictionary <string,List<string>> dict = new Dictionary<string,List<string>>();
 			string line;
-			string noteName="";
-			using (StreamReader stream = new StreamReader(FileConfig.mergedTextPath))
+			string noteName = "";
+			JArray array = (JArray)FileManager.GetJsonObject(FileConfig.combinedNotes)["data"];
+			foreach (JObject note in array)
 			{
-				while ((line = stream.ReadLine()) != null)
+				var sentences = note["text"].Value<string>().Split('.').ToList();
+				List<string> exprSentences = new List<string>();
+				foreach (var sentence in sentences)
 				{
-					if (line.StartsWith(FileConfig.noteCode, StringComparison.OrdinalIgnoreCase))
+					if (sentence.Contains(expression))
 					{
-						noteName = line.Substring(FileConfig.noteCode.Length - 1); // we take name without code
-					}
-					else
-					{
-						List<string> sentences = line.Split('.').ToList();
-						List<string> exprSentences = new List<string>();
-						foreach (var sentence in sentences)
-						{
-							if (sentence.Contains(expression))
-							{
-								exprSentences.Add(sentence);
-							}
-						}
-						if(exprSentences.Count > 0) 
-						dict.Add(noteName, exprSentences);
+						exprSentences.Add(sentence);
 					}
 				}
+				if (exprSentences.Count > 0)
+					dict.Add(note["name"].Value<string>(), exprSentences);
 			}
 			return dict;
 		}
+		
+		
 	}
 }

@@ -109,7 +109,7 @@ namespace thoughtsApp
 			switch (choice.option)
 			{
 				case 1:
-					FileManager.DownloadAllNotes(FileConfig.folderId);
+					FileManager.DownloadAllNotesJson(FileConfig.folderId);
 					break;
 				case 2:
 					ViewExpressionSentences();
@@ -135,19 +135,23 @@ namespace thoughtsApp
 				Console.Clear();
 				Console.WriteLine("Type in expression: ");
 				string expression = Console.ReadLine();
-				var sentences = MainViewLogic.GetExpressionSentences(expression);
-				foreach (var sentence in sentences)
-				{
-					Console.WriteLine(sentence.Key);
-					int sentenceNo = 1;
-					foreach (var line in sentence.Value)
-					{
-						Console.WriteLine(sentenceNo + ". " + line + ".");
-					}
-				}
+				ReadDictSentences(MainViewLogic.GetExpressionSentences(expression));
 				Console.ReadLine();
 			}
 			while (false);
+		}
+
+		public static void ReadDictSentences(Dictionary<string, List<string>> sentences) 
+		{
+			foreach (var sentence in sentences)
+			{
+				Console.WriteLine(sentence.Key);
+				int sentenceNo = 1;
+				foreach (var line in sentence.Value)
+				{
+					Console.WriteLine(sentenceNo + ". " + line + ".");
+				}
+			}
 		}
 		
 	}
