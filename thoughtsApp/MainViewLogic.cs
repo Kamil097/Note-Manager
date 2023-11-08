@@ -37,10 +37,10 @@ namespace thoughtsApp
 
             string text = Console.ReadLine();
             if (Verifiers.ExitConditions(text))
-                return (0, false);
+                return (0, true);
 
             if (!Verifiers.optionWerifier(optionsCount, text))
-                return (0, true);
+                return (0, false);
 
             int.TryParse(text, out int option);
             return (option, false);
@@ -57,7 +57,7 @@ namespace thoughtsApp
 
             int.TryParse(text, out int option);
 
-            MainView.FileViewer(list, option - 1, folderId);
+            MainView.FileViewer(list, option - 1);
             return true;
         }
         //For loop to continue, we have to give TRUE
@@ -92,9 +92,9 @@ namespace thoughtsApp
             return (!Verifiers.ExitConditions(text), note);
         }
         //Key is note name, and list represents sentences of such note with given expression.
-        public static Dictionary<string, List<string>> GetExpressionSentences(string expression)
+        public static List<(string name, List<string> sentence)> GetExpressionSentences(string expression)
         {
-            Dictionary<string, List<string>> dict = new Dictionary<string, List<string>>();
+            List<(string name, List<string> sentence)> list = new List<(string name, List<string> sentence)>();
             string line;
             string noteName = "";
             JArray array = (JArray)FileManager.GetJsonObject(FileConfig.combinedNotes)["data"];
@@ -110,9 +110,9 @@ namespace thoughtsApp
                     }
                 }
                 if (exprSentences.Count > 0)
-                    dict.Add(note["name"].Value<string>(), exprSentences);
+                    list.Add((note["name"].Value<string>(), exprSentences));
             }
-            return dict;
+            return list;
         }
 
 

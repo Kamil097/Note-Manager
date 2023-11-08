@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualBasic.FileIO;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace thoughtsApp
                 Console.WriteLine("4. View everything.");
                 choice = MainViewLogic.OptionsLoopCondition(4);
             }
-            while (choice.loop);
+            while (choice.option==0); // we don't need to check exit conditions here
 
             return choice.option;
         }
@@ -79,7 +80,7 @@ namespace thoughtsApp
             }
             while (continuation.loop);
         }
-        public static void FileViewer(List<(string name, string id)> list, int note, string folderId)
+        public static void FileViewer(List<(string name, string id)> list, int note)
         {
             (bool loop, int note) continuation = (true, note);
             do
@@ -94,7 +95,7 @@ namespace thoughtsApp
         }
         public static void OperateOnNotes(string folderId)
         {
-            (int option, bool loop) choice = (0, true);
+            (int option, bool exit) info = (0,false);
             do
             {
                 Console.Clear();
@@ -102,58 +103,108 @@ namespace thoughtsApp
                 Console.WriteLine("2. List sentences with given expression.");
                 Console.WriteLine("3. Some other option.");
                 Console.WriteLine("4. Some other option.");
-                choice = MainViewLogic.OptionsLoopCondition(4);
+                info = MainViewLogic.OptionsLoopCondition(4);
+
+                if (info.option!=0)
+                {
+                    //If Exitconditions is true, option == 0, default case is activated and you go back
+                    switch (info.option)
+                    {
+                        case 1:
+                            FileManager.DownloadAllNotesJson(FileConfig.folderId);
+                            break;
+                        case 2:
+                            ViewExpressionSentences();
+                            break;
+                        case 3:
+                            Console.WriteLine("Trzeci");
+                            Console.ReadLine();
+                            break;
+                        case 4:
+                            Console.WriteLine("Default");
+                            Console.ReadLine();
+                            break;
+
+                        default:
+
+                            break;
+                    }
+                }
             }
-            while (choice.loop);
-
-            //If Exitconditions is true, option == 0, default case is activated and you go back
-            switch (choice.option)
-            {
-                case 1:
-                    FileManager.DownloadAllNotesJson(FileConfig.folderId);
-                    break;
-                case 2:
-                    ViewExpressionSentences();
-                    break;
-                case 3:
-                    Console.WriteLine("Trzeci");
-                    Console.ReadLine();
-                    break;
-                case 4:
-                    Console.WriteLine("Default");
-                    Console.ReadLine();
-                    break;
-
-                default:
-
-                    break;
-            }
+            while (!info.exit);
         }
         public static void ViewExpressionSentences()
         {
+            (int option, bool exit) info = (0, false);
             do
             {
                 Console.Clear();
                 Console.WriteLine("Type in expression: ");
                 string expression = Console.ReadLine();
-                ReadDictSentences(MainViewLogic.GetExpressionSentences(expression));
-                Console.ReadLine();
-            }
-            while (false);
-        }
+                if (Verifiers.ExitConditions(expression)) // it makes sense to do it here trust me
+                    break;
 
-        public static void ReadDictSentences(Dictionary<string, List<string>> sentences)
+                var expressionSentences = MainViewLogic.GetExpressionSentences(expression);
+                if (expressionSentences.Count > 0)
+                    ViewExpressionSentencesChoice(expressionSentences);
+
+            }
+            while (true); // I know, hurts my feelings as well
+
+        }
+        public static void ViewExpressionSentencesChoice(List<(string name, List<string> sentence)> expressionSentences) 
         {
-            foreach (var sentence in sentences)
+            (int option, bool exit) info = (0, false);
+            do
             {
-                Console.WriteLine(sentence.Key);
-                int sentenceNo = 1;
-                foreach (var line in sentence.Value)
+                ReadDictSentences(expressionSentences);
+                Console.WriteLine("Wybierz notatkę z zadaną frazą:");
+                info = MainViewLogic.OptionsLoopCondition(expressionSentences.Count);
+
+                if (info.exit)
+                    break;
+                else if(info.option!=0)
+                    ReadNoteBySentence(expressionSentences[info.option - 1].name);
+                Console.Clear();
+
+            }
+            while (true);
+        }
+        public static void ReadNoteBySentence(string name)
+        {
+            Console.Clear();
+            JObject notatki = FileManager.GetJsonObject(FileConfig.combinedNotes);
+            JArray array = (JArray)notatki["data"];
+            var properNote = array.Where(x => x["name"].Value<string>()==name).FirstOrDefault();
+            string text = properNote["text"].Value<string>();
+            Console.WriteLine(text);
+            Console.WriteLine("Press enter to continue...");
+            Console.ReadLine();
+            Console.Clear();
+        }
+        public static void ReadDictSentences(List<(string name, List<string> sentence)> notes)
+        {
+            int noteNumber = 0;
+            if (notes.Count > 0)
+            {
+                foreach (var note in notes)
                 {
-                    Console.WriteLine(sentenceNo + ". " + line + ".");
+                    noteNumber++;
+                    Console.WriteLine("\n----------------------------");
+                    Console.WriteLine(noteNumber+ ". " + note.name);
+                    Console.WriteLine("----------------------------\n");
+                    foreach (var line in note.sentence)
+                    {
+                        Console.WriteLine(line + ".");
+                    }
                 }
             }
+            else
+            {
+                Console.WriteLine("Phrase wasn't found.");
+            }
         }
+       
 
     }
 }

@@ -141,6 +141,7 @@ namespace thoughtsApp
         {
             JObject data = GetJsonObject(FileConfig.combinedNotes);
             JArray array = (JArray)data["data"];
+            array.Clear();
 
 
             var service = googleService();
