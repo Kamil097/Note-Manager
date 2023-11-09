@@ -136,14 +136,16 @@ namespace thoughtsApp
             var tekst = reader.ReadToEnd();
             return tekst;
         }
-
-        public static void DownloadAllNotesJson(string folderId)
+        public static event Action DownloadStarted;
+        public static event Action DownloadCompleted;
+        public static async Task DownloadAllNotesJson(string folderId)
         {
+            
             JObject data = GetJsonObject(FileConfig.combinedNotes);
             JArray array = (JArray)data["data"];
             array.Clear();
 
-
+            DownloadStarted?.Invoke();
             var service = googleService();
             var request = service.Files.List();
             request.Q = $"'{folderId}' in parents";
@@ -165,6 +167,7 @@ namespace thoughtsApp
                 }
             }
             File.WriteAllText(FileConfig.combinedNotes, data.ToString());
+            DownloadCompleted?.Invoke();
         }
         public static JObject createNoteObj(string name, string text)
         {

@@ -95,6 +95,8 @@ namespace thoughtsApp
         }
         public static void OperateOnNotes(string folderId)
         {
+            bool isDownloading = true;
+            FileManager.DownloadCompleted += () => isDownloading = false;
             (int option, bool exit) info = (0,false);
             do
             {
@@ -111,7 +113,21 @@ namespace thoughtsApp
                     switch (info.option)
                     {
                         case 1:
-                            FileManager.DownloadAllNotesJson(FileConfig.folderId);
+                            Console.Clear();
+                            Task downloadTask = Task.Run(() => FileManager.DownloadAllNotesJson(FileConfig.folderId));
+                            while (isDownloading)
+                            {
+                                for (int i = 1; i < 3; i++)
+                                {
+                                    Console.Write("DOWNLOADING");
+                                    for (int j = 0; j <= i; j++)
+                                    {
+                                        Console.Write(".");
+                                        Thread.Sleep(500);
+                                    }
+                                    Console.Clear();
+                                };
+                            }
                             break;
                         case 2:
                             ViewExpressionSentences();
@@ -146,43 +162,45 @@ namespace thoughtsApp
 
                 var expressionSentences = MainViewLogic.GetExpressionSentences(expression);
                 if (expressionSentences.Count > 0)
-                    ViewExpressionSentencesChoice(expressionSentences);
+                    ViewExpressionSentencesChoice(expressionSentences,expression);
 
             }
             while (true); // I know, hurts my feelings as well
 
         }
-        public static void ViewExpressionSentencesChoice(List<(string name, List<string> sentence)> expressionSentences) 
+        public static void ViewExpressionSentencesChoice(List<(string name, List<string> sentence)> expressionSentences,string expression) 
         {
             (int option, bool exit) info = (0, false);
             do
             {
-                ReadDictSentences(expressionSentences);
-                Console.WriteLine("Wybierz notatkę z zadaną frazą:");
+                ReadDictSentences(expressionSentences,expression);
+                Console.WriteLine("\n\n\nLookup given note:");
                 info = MainViewLogic.OptionsLoopCondition(expressionSentences.Count);
 
                 if (info.exit)
                     break;
                 else if(info.option!=0)
-                    ReadNoteBySentence(expressionSentences[info.option - 1].name);
+                    ReadNoteBySentence(expressionSentences[info.option - 1].name,expression);
                 Console.Clear();
 
             }
             while (true);
         }
-        public static void ReadNoteBySentence(string name)
+        public static void ReadNoteBySentence(string name, string expression)
         {
             Console.Clear();
             JObject notatki = FileManager.GetJsonObject(FileConfig.combinedNotes);
             JArray array = (JArray)notatki["data"];
             var properNote = array.Where(x => x["name"].Value<string>()==name).FirstOrDefault();
             string text = properNote["text"].Value<string>();
-            Console.WriteLine(text);
+
+
+            ReadSentenceWithColoredExpression(text, expression);
             Console.WriteLine("Press enter to continue...");
             Console.ReadLine();
             Console.Clear();
         }
-        public static void ReadDictSentences(List<(string name, List<string> sentence)> notes)
+        public static void ReadDictSentences(List<(string name, List<string> sentence)> notes, string expression )
         {
             int noteNumber = 0;
             if (notes.Count > 0)
@@ -195,7 +213,9 @@ namespace thoughtsApp
                     Console.WriteLine("----------------------------\n");
                     foreach (var line in note.sentence)
                     {
-                        Console.WriteLine(line + ".");
+                        //Console.WriteLine(line + ".");
+                        ReadSentenceWithColoredExpression(line+".", expression);
+                       // Console.Write(".\n");
                     }
                 }
             }
@@ -204,7 +224,29 @@ namespace thoughtsApp
                 Console.WriteLine("Phrase wasn't found.");
             }
         }
-       
+        public static void ReadSentenceWithColoredExpression(string sentence, string expression) 
+        {
+            int startIndex = 0;
+            while (startIndex < sentence.Length)
+            {
+                int wordIndex = sentence.IndexOf(expression, startIndex);
+                if (wordIndex != -1)
+                {
+                    Console.Write(sentence.Substring(startIndex, wordIndex - startIndex));
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write(expression);
+                    Console.ResetColor();
+                    startIndex = wordIndex + expression.Length;
+                }
+                else
+                {
+                    Console.WriteLine(sentence.Substring(startIndex));
+                    break;
+                }
+            }
+        
+        
+        }
 
     }
 }
