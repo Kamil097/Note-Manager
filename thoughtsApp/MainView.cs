@@ -2,6 +2,8 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Security.Cryptography.X509Certificates;
@@ -23,7 +25,7 @@ namespace thoughtsApp
                 Console.WriteLine("1. Upload your thought.");
                 Console.WriteLine("2. View thoughts explorer.");
                 Console.WriteLine("3. View random thought.");
-                Console.WriteLine("4. View everything.");
+                Console.WriteLine("4. Perform operations on notes.");
                 choice = MainViewLogic.OptionsLoopCondition(4);
             }
             while (choice.option==0); // we don't need to check exit conditions here
@@ -82,14 +84,19 @@ namespace thoughtsApp
         }
         public static void FileViewer(List<(string name, string id)> list, int note)
         {
-            (bool loop, int note) continuation = (true, note);
+            (bool loop, int note, bool edit) continuation = (true, note, false);
             do
             {
                 Console.Clear();
-                Console.WriteLine("| X- Go Back | XD - Leave Program |\n| Next - Next Note | Prev - Previous Note |\n");
+                if (continuation.edit)
+                    Console.WriteLine("Add text to your current note.");
+                else
+                    Console.WriteLine("| X- Go Back | XD - Leave Program |\n| Next - Next Note | Prev - Previous Note |\n| Update - Update Note");
+
                 var text = FileManager.GetFileText(list[continuation.note].id);
                 FilesLookup(list[continuation.note], text);
-                continuation = MainViewLogic.FileViewerLoop(continuation.note, list.Count - 1);
+
+                continuation =  MainViewLogic.FileViewerLoop(continuation.note, list.Count - 1, continuation.edit, (text,list[continuation.note].id));
             }
             while (continuation.loop);
         }
@@ -116,18 +123,7 @@ namespace thoughtsApp
                             Console.Clear();
                             Task downloadTask = Task.Run(() => FileManager.DownloadAllNotesJson(FileConfig.folderId));
                             while (isDownloading)
-                            {
-                                for (int i = 1; i < 3; i++)
-                                {
-                                    Console.Write("DOWNLOADING");
-                                    for (int j = 0; j <= i; j++)
-                                    {
-                                        Console.Write(".");
-                                        Thread.Sleep(500);
-                                    }
-                                    Console.Clear();
-                                };
-                            }
+                                DownloadingAnimation();
                             break;
                         case 2:
                             ViewExpressionSentences();
@@ -213,9 +209,7 @@ namespace thoughtsApp
                     Console.WriteLine("----------------------------\n");
                     foreach (var line in note.sentence)
                     {
-                        //Console.WriteLine(line + ".");
                         ReadSentenceWithColoredExpression(line+".", expression);
-                       // Console.Write(".\n");
                     }
                 }
             }
@@ -246,6 +240,19 @@ namespace thoughtsApp
             }
         
         
+        }
+        public static void DownloadingAnimation() 
+        {
+            for (int i = 1; i < 3; i++)
+            {
+                Console.Write("DOWNLOADING");
+                for (int j = 0; j <= i; j++)
+                {
+                    Console.Write(".");
+                    Thread.Sleep(500);
+                }
+                Console.Clear();
+            };
         }
 
     }

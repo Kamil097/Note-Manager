@@ -6,11 +6,13 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace thoughtsApp
@@ -80,6 +82,27 @@ namespace thoughtsApp
                     }
                 }
             }
+        }
+        public static async Task UpdateNoteToGoogleDrive(string fileId,string text)
+        {
+            var service = googleService();
+            var fileMetaData = new Google.Apis.Drive.v3.Data.File();
+            var stream = new MemoryStream();
+            byte[] textBytes = Encoding.UTF8.GetBytes(text);
+            stream.Write(textBytes, 0, textBytes.Length);
+            var request = service.Files.Update(fileMetaData, fileId, stream, "text/plain");
+            var result = await request.UploadAsync(CancellationToken.None);
+
+                if (result.Status == UploadStatus.Failed)
+                {
+                    Console.WriteLine($"Error uploading file: {result.Exception.Message}");
+                }
+                else
+                {
+                    Console.WriteLine($"File with id: {request.ResponseBody.Id} has been uploaded.");
+                }
+                Thread.Sleep(1000);
+            await Task.CompletedTask;
         }
         public static async Task SendNewNote(string description, string folderId)
         {

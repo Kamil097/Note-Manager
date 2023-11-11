@@ -61,10 +61,18 @@ namespace thoughtsApp
             return true;
         }
         //For loop to continue, we have to give TRUE
-        public static (bool loop, int note) FileViewerLoop(int note, int limit)
+        public static  (bool loop, int note, bool edit) FileViewerLoop(int note, int limit,bool doEdit, (string text, string id) fileinfo)
         {
 
+            bool edit = false;
             string text = Console.ReadLine();
+
+            if (doEdit)
+            {
+                 var dupa = FileManager.UpdateNoteToGoogleDrive(fileinfo.id, fileinfo.text + text);
+                 while (!dupa.IsCompleted) { } // im a moron, but it works
+            }
+
             if (text.Equals("prev", StringComparison.OrdinalIgnoreCase))
             {
                 if (note > 1)
@@ -79,7 +87,11 @@ namespace thoughtsApp
                     note += 1;
                 }
             }
-            return (!Verifiers.ExitConditions(text), note);
+            else if (text.Equals("update", StringComparison.OrdinalIgnoreCase))
+            {
+                edit = true;  
+            }
+            return (!Verifiers.ExitConditions(text), note,edit);
         }
         public static (bool loop, int note) RandomThoughtLoop(int note, int limit)
         {
