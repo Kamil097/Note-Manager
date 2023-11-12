@@ -48,10 +48,11 @@ namespace thoughtsApp
         }
         public static void DriveExplorer(string folderId)
         {
-            var list = FileManager.GetNotesInfoFromDrive(folderId);
-            var length = list.Count();
+            var list = new List<(string name, string id)>();
             do
             {
+                list = FileManager.GetNotesInfoFromDrive(folderId);
+                var length = list.Count();
                 Console.Clear();
                 Console.WriteLine("List of current notes.");
                 Console.WriteLine("----------------------");
@@ -91,7 +92,7 @@ namespace thoughtsApp
                 if (continuation.edit)
                     Console.WriteLine("Add text to your current note.");
                 else
-                    Console.WriteLine("| X- Go Back | XD - Leave Program |\n| Next - Next Note | Prev - Previous Note |\n| Update - Update Note");
+                    Console.WriteLine("| X- Go Back | XD - Leave Program |\n| Next - Next Note | Prev - Previous Note |\n| Update - Update Note | Delete - Delete Note");
 
                 var text = FileManager.GetFileText(list[continuation.note].id);
                 FilesLookup(list[continuation.note], text);
@@ -123,7 +124,7 @@ namespace thoughtsApp
                             Console.Clear();
                             Task downloadTask = Task.Run(() => FileManager.DownloadAllNotesJson(FileConfig.folderId));
                             while (isDownloading)
-                                DownloadingAnimation();
+                                WaitingAnimation("Downloading");
                             break;
                         case 2:
                             ViewExpressionSentences();
@@ -241,11 +242,12 @@ namespace thoughtsApp
         
         
         }
-        public static void DownloadingAnimation() 
+        public static void WaitingAnimation(string text) 
         {
+            Console.Clear();
             for (int i = 1; i < 3; i++)
             {
-                Console.Write("DOWNLOADING");
+                Console.Write(text.ToUpper());
                 for (int j = 0; j <= i; j++)
                 {
                     Console.Write(".");

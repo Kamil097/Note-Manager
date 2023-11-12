@@ -66,11 +66,15 @@ namespace thoughtsApp
 
             bool edit = false;
             string text = Console.ReadLine();
+            bool loop = !Verifiers.ExitConditions(text);
 
             if (doEdit)
             {
-                 var dupa = FileManager.UpdateNoteToGoogleDrive(fileinfo.id, fileinfo.text + text);
-                 while (!dupa.IsCompleted) { } // im a moron, but it works
+                 var updating = FileManager.UpdateNoteToGoogleDrive(fileinfo.id, fileinfo.text + text);
+                 while (!updating.IsCompleted)
+                {
+                    MainView.WaitingAnimation("updading");
+                } // im a moron, but it works
             }
 
             if (text.Equals("prev", StringComparison.OrdinalIgnoreCase))
@@ -89,9 +93,18 @@ namespace thoughtsApp
             }
             else if (text.Equals("update", StringComparison.OrdinalIgnoreCase))
             {
-                edit = true;  
+                edit = true;
             }
-            return (!Verifiers.ExitConditions(text), note,edit);
+            else if (text.Equals("delete", StringComparison.OrdinalIgnoreCase)) // we want to exit loop in order to refresh list of notes
+            {
+                loop = false;
+                var deleting = FileManager.DeleteNoteFromGoogleDrive(fileinfo.id);
+                while(!deleting.IsCompleted) 
+                {
+                    MainView.WaitingAnimation("deleting");
+                }
+            }
+            return (loop, note,edit);
         }
         public static (bool loop, int note) RandomThoughtLoop(int note, int limit)
         {

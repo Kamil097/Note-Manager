@@ -104,6 +104,13 @@ namespace thoughtsApp
                 Thread.Sleep(1000);
             await Task.CompletedTask;
         }
+        public static async Task DeleteNoteFromGoogleDrive(string fileId) 
+        {
+            var service = googleService();
+            var request = service.Files.Delete(fileId);
+            var result = await request.ExecuteAsync(CancellationToken.None);
+            await Task.CompletedTask;
+        }
         public static async Task SendNewNote(string description, string folderId)
         {
             string name = GetDateTimeName();
