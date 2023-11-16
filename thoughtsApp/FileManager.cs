@@ -113,6 +113,7 @@ namespace thoughtsApp
         }
         public static async Task SendNewNote(string description, string folderId)
         {
+            string encryptedMessage = Encryptor.Encrypt(description,FileConfig.encryptionKey);
             string name = GetDateTimeName();
             var service = googleService();
             var fileMetaData = new Google.Apis.Drive.v3.Data.File()
@@ -122,7 +123,7 @@ namespace thoughtsApp
             };
             using (MemoryStream stream = new MemoryStream())
             {
-                byte[] textBytes = Encoding.UTF8.GetBytes(description);
+                byte[] textBytes = Encoding.UTF8.GetBytes(encryptedMessage);
                 stream.Write(textBytes, 0, textBytes.Length);
 
                 var request = service.Files.Create(fileMetaData, stream, "text/plain");
@@ -164,7 +165,8 @@ namespace thoughtsApp
             stream.Position = 0;
             StreamReader reader = new StreamReader(stream);
             var tekst = reader.ReadToEnd();
-            return tekst;
+            string encryptedText = Encryptor.Decrypt(tekst, FileConfig.encryptionKey);
+            return encryptedText;
         }
         public static event Action DownloadStarted;
         public static event Action DownloadCompleted;
@@ -191,7 +193,8 @@ namespace thoughtsApp
                     using (StreamReader reader = new StreamReader(stream))
                     {
                         string fileText = reader.ReadToEnd();
-                        JObject newNote = createNoteObj(file.Name, fileText);
+                        string encryptedText = Encryptor.Decrypt(fileText, FileConfig.encryptionKey);   
+                        JObject newNote = createNoteObj(file.Name, encryptedText);
                         array.Add(newNote);
                     }
                 }

@@ -14,5 +14,6 @@ namespace thoughtsApp
         public static readonly string projectDirectory = AppDomain.CurrentDomain.BaseDirectory;
         public static readonly string combinedNotes = Path.Combine(projectDirectory, @"FileFolder\combinedNotes.json");
         public static readonly string credentialsPath = Path.Combine(projectDirectory, @"FileFolder\credentials.json");
+        public static readonly string encryptionKey = "!@#whoami#@!";
     }
 }
