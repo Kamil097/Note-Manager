@@ -1,26 +1,14 @@
 ﻿using thoughtsApp;
 
 FileManager.Initialize();
-
+//FileManager.CreateNewFolder();
 while (true)
 {
+    var choice = MainView.FolderListLoop();
 
-    int option = MainView.MainWindowOptionListLoop();
-
-    switch (option)
+    if (choice.option > 0)
     {
-        case 1:
-            MainView.ThoughtLoop();
-            break;
-        case 2:
-            MainView.DriveExplorer(FileConfig.folderId);
-            break;
-        case 3:
-            MainView.RandomFileViewer(FileConfig.folderId);
-            break;
-        case 4:
-            MainView.OperateOnNotes(FileConfig.folderId);
-            break;
-        default: continue;
+        string folderId = FileConfig.jsonDict[FileConfig.jsonName[choice.option - 1]];
+        MainView.MainWindowOptionListLoop(folderId);
     }
 }

@@ -15,8 +15,25 @@ namespace thoughtsApp
 {
     public static class MainView
     {
-        public delegate bool LoopDelegate();
-        public static int MainWindowOptionListLoop()
+        public static (int option, bool loop) FolderListLoop() 
+        {
+            (int option, bool loop) choice = (0, true);
+            do
+            {
+                Console.Clear();
+                Console.WriteLine("CHOOSE FOLDER.\n\n");
+                Console.WriteLine("1. Journal.");
+                Console.WriteLine("2. Thoughts.");
+                Console.WriteLine("3. Rules.");
+                choice = MainViewLogic.OptionsLoopCondition(3);
+                if (choice.loop == true)
+                    break;
+            }
+            while (choice.option == 0); 
+
+            return choice;
+        }
+        public static void MainWindowOptionListLoop(string folderId)
         {
             (int option, bool loop) choice = (0, true);
             do
@@ -27,12 +44,30 @@ namespace thoughtsApp
                 Console.WriteLine("3. View random thought.");
                 Console.WriteLine("4. Perform operations on notes.");
                 choice = MainViewLogic.OptionsLoopCondition(4);
-            }
-            while (choice.option==0); // we don't need to check exit conditions here
+                if (choice.option != 0)
+                {
 
-            return choice.option;
+                    switch (choice.option)
+                    {
+                        case 1:
+                            ThoughtLoop(folderId);
+                            break;
+                        case 2:
+                            DriveExplorer(folderId);
+                            break;
+                        case 3:
+                            RandomFileViewer(folderId);
+                            break;
+                        case 4:
+                            OperateOnNotes(folderId);
+                            break;
+                        default: return;
+                    }
+                }
+            }
+            while (!choice.loop); 
         }
-        public static void ThoughtLoop()
+        public static void ThoughtLoop(string folderId)
         {
             do
             {
@@ -44,7 +79,7 @@ namespace thoughtsApp
                 Console.WriteLine("----------------------------\n");
                 Console.WriteLine("Share your thought below: \n\n\n");
             }
-            while (MainViewLogic.ThoughtLoopCondition().Result);
+            while (MainViewLogic.ThoughtLoopCondition(folderId).Result);
         }
         public static void DriveExplorer(string folderId)
         {
@@ -122,7 +157,7 @@ namespace thoughtsApp
                     {
                         case 1:
                             Console.Clear();
-                            Task downloadTask = Task.Run(() => FileManager.DownloadAllNotesJson(FileConfig.folderId));
+                            Task downloadTask = Task.Run(() => FileManager.DownloadAllNotesJson(folderId));
                             while (isDownloading)
                                 WaitingAnimation("Downloading");
                             break;

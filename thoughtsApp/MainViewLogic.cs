@@ -13,7 +13,7 @@ namespace thoughtsApp
     public static class MainViewLogic
     {
         //Loop that handles sending new thoughts
-        public static async Task<bool> ThoughtLoopCondition()
+        public static async Task<bool> ThoughtLoopCondition(string folderId)
         {
             try
             {
@@ -22,7 +22,7 @@ namespace thoughtsApp
                 if (Verifiers.ExitConditions(text))
                     return false;
 
-                await FileManager.SendNewNote(text, FileConfig.folderId);
+                await FileManager.SendNewNote(text, folderId);
                 await Task.Delay(1000);
             }
             finally

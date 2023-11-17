@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,7 +20,8 @@ namespace thoughtsApp
 {
     public static class FileManager
     {
-
+        public static event Action DownloadStarted;
+        public static event Action DownloadCompleted;
         public static void Initialize()
         {
             if (!Directory.Exists(FileConfig.FullPath))
@@ -141,6 +143,23 @@ namespace thoughtsApp
             }
             await Task.CompletedTask;
         }
+        public static async Task CreateNewFolder()
+        {
+            var service = googleService();
+            var folderMetadata = new Google.Apis.Drive.v3.Data.File
+            {
+                Name = "NazwaNowegoFolderu",
+                Parents = new List<string> { "1z4kHf255o0KWCRAF8RptnKAGSIQ3EH9o" },
+                MimeType = "application/vnd.google-apps.folder",
+            };
+
+            var request = service.Files.Create(folderMetadata);
+            request.Fields = "id";
+            var folder = request.Execute();
+
+            Console.WriteLine($"Utworzono folder o Id: {folder.Id}");
+            await Task.CompletedTask;
+        }
         public static List<(string name, string id)> GetNotesInfoFromDrive(string folderId)
         {
             List<(string name, string id)> pliki = new List<(string name, string id)>();
@@ -168,12 +187,11 @@ namespace thoughtsApp
             string encryptedText = Encryptor.Decrypt(tekst, FileConfig.encryptionKey);
             return encryptedText;
         }
-        public static event Action DownloadStarted;
-        public static event Action DownloadCompleted;
         public static async Task DownloadAllNotesJson(string folderId)
         {
-            
-            JObject data = GetJsonObject(FileConfig.combinedNotes);
+            string fileName = FileConfig.jsonDict.Where(x => x.Value == folderId).FirstOrDefault().Key; //given json
+            string combinedNotes = Path.Combine(FileConfig.combinedNotes, fileName);   
+            JObject data = GetJsonObject(combinedNotes);
             JArray array = (JArray)data["data"];
             array.Clear();
 
@@ -199,7 +217,7 @@ namespace thoughtsApp
                     }
                 }
             }
-            File.WriteAllText(FileConfig.combinedNotes, data.ToString());
+            File.WriteAllText(combinedNotes, data.ToString());
             DownloadCompleted?.Invoke();
         }
         public static JObject createNoteObj(string name, string text)
