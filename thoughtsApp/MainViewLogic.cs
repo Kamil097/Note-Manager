@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -45,6 +46,42 @@ namespace thoughtsApp
             int.TryParse(text, out int option);
             return (option, false);
         }
+        public static (int option, bool loop) FolderLoopCondition( List<(string name, string id)> folderInfo) 
+        {
+            string text = Console.ReadLine();
+            string[] splitted = text.Split(" ");
+
+            if (splitted.Count()==2)
+            {
+                if (splitted[0].Equals("create", StringComparison.OrdinalIgnoreCase))
+                {
+                    var task = FileManager.CreateNewFolder(splitted[1]);
+                    while (!task.IsCompleted)
+                        MainView.WaitingAnimation("Creating folder");
+                    return (0, false);
+                }
+                else if (splitted[0].Equals("delete", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (Verifiers.optionWerifier(folderInfo.Count, splitted[1]))
+                    {
+                        int.TryParse(text, out int noteIndex);
+                        var task = FileManager.DeleteNoteFromGoogleDrive(folderInfo[noteIndex].id);
+                        while (!task.IsCompleted)
+                            MainView.WaitingAnimation("Deleting folder");
+                        return (0, false);
+                    }
+                }
+            }
+
+            if (Verifiers.ExitConditions(text))
+                return (0, true);
+
+            if (!Verifiers.optionWerifier(folderInfo.Count, text))
+                return (0, false);
+
+            int.TryParse(text, out int option);
+            return (option, false);
+        }
         //Loop that handles explorer
         public static bool ThoughtListLoop(string folderId, List<(string name, string id)> list)
         {
@@ -67,10 +104,10 @@ namespace thoughtsApp
             bool edit = false;
             string text = Console.ReadLine();
             bool loop = !Verifiers.ExitConditions(text);
-
+            string encryptedText = Encryptor.Encrypt(fileinfo.text + text,FileConfig.encryptionKey);
             if (doEdit)
             {
-                 var updating = FileManager.UpdateNoteToGoogleDrive(fileinfo.id, fileinfo.text + text);
+                 var updating = FileManager.UpdateNoteToGoogleDrive(fileinfo.id, encryptedText);
                  while (!updating.IsCompleted)
                 {
                     MainView.WaitingAnimation("updading");
@@ -79,7 +116,7 @@ namespace thoughtsApp
 
             if (text.Equals("prev", StringComparison.OrdinalIgnoreCase))
             {
-                if (note > 1)
+                if (note > 0)
                 {
                     note -= 1;
                 }
@@ -117,12 +154,12 @@ namespace thoughtsApp
             return (!Verifiers.ExitConditions(text), note);
         }
         //Key is note name, and list represents sentences of such note with given expression.
-        public static List<(string name, List<string> sentence)> GetExpressionSentences(string expression)
+        public static List<(string name, List<string> sentence)> GetExpressionSentences(string expression,string combinedNotes)
         {
             List<(string name, List<string> sentence)> list = new List<(string name, List<string> sentence)>();
             string line;
             string noteName = "";
-            JArray array = (JArray)FileManager.GetJsonObject(FileConfig.combinedNotes)["data"];
+            JArray array = (JArray)FileManager.GetJsonObject(combinedNotes)["data"];
             foreach (JObject note in array)
             {
                 var sentences = note["text"].Value<string>().Split('.').ToList();

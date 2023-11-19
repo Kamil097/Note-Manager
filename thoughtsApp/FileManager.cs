@@ -22,6 +22,8 @@ namespace thoughtsApp
     {
         public static event Action DownloadStarted;
         public static event Action DownloadCompleted;
+        public static event Action FoldersDownloadStarted;
+        public static event Action FoldersDownloadCompleted;
         public static void Initialize()
         {
             if (!Directory.Exists(FileConfig.FullPath))
@@ -143,23 +145,6 @@ namespace thoughtsApp
             }
             await Task.CompletedTask;
         }
-        public static async Task CreateNewFolder()
-        {
-            var service = googleService();
-            var folderMetadata = new Google.Apis.Drive.v3.Data.File
-            {
-                Name = "NazwaNowegoFolderu",
-                Parents = new List<string> { "1z4kHf255o0KWCRAF8RptnKAGSIQ3EH9o" },
-                MimeType = "application/vnd.google-apps.folder",
-            };
-
-            var request = service.Files.Create(folderMetadata);
-            request.Fields = "id";
-            var folder = request.Execute();
-
-            Console.WriteLine($"Utworzono folder o Id: {folder.Id}");
-            await Task.CompletedTask;
-        }
         public static List<(string name, string id)> GetNotesInfoFromDrive(string folderId)
         {
             List<(string name, string id)> pliki = new List<(string name, string id)>();
@@ -187,13 +172,15 @@ namespace thoughtsApp
             string encryptedText = Encryptor.Decrypt(tekst, FileConfig.encryptionKey);
             return encryptedText;
         }
-        public static async Task DownloadAllNotesJson(string folderId)
+        public static async Task DownloadAllNotesJson(string folderId,string combinedNotes)
         {
-            string fileName = FileConfig.jsonDict.Where(x => x.Value == folderId).FirstOrDefault().Key; //given json
-            string combinedNotes = Path.Combine(FileConfig.combinedNotes, fileName);   
-            JObject data = GetJsonObject(combinedNotes);
-            JArray array = (JArray)data["data"];
-            array.Clear();
+            if (!File.Exists(combinedNotes))
+            {
+                File.Create(combinedNotes);
+            }
+            JObject data = new JObject();//GetJsonObject(combinedNotes);//GetJsonObject(combinedNotes);
+            data["data"] = new JArray();
+            JArray array = (JArray) data ["data"];
 
             DownloadStarted?.Invoke();
             var service = googleService();
@@ -239,6 +226,42 @@ namespace thoughtsApp
                 JObject jobject = JObject.Parse(content);
                 return jobject;
             }
+        }
+        public static List<(string name, string Id)> getCurrentFolders()
+        {
+            string folderId = "1y00Xd9fVkm7GeDF5gYspTKRP1nER9ldG";
+
+            List<(string name, string id)> pliki = new List<(string name, string id)>();
+
+            var service = googleService();
+            var request = service.Files.List();
+            request.Q = $"'{folderId}' in parents";
+            FoldersDownloadStarted?.Invoke();
+            var folders = request.Execute().Files.ToList().Where(x => x.MimeType == "application/vnd.google-apps.folder").ToList();
+            foreach (var file in folders)
+            {
+                pliki.Add((file.Name, file.Id));
+            }
+            FoldersDownloadCompleted?.Invoke();
+            return pliki;
+
+        }
+        public static async Task CreateNewFolder(string folderName)
+        {
+            var service = googleService();
+            var folderMetadata = new Google.Apis.Drive.v3.Data.File
+            {
+                Name = folderName,
+                Parents = new List<string> { FileConfig.mainFolder },
+                MimeType = "application/vnd.google-apps.folder",
+            };
+
+            var request = service.Files.Create(folderMetadata);
+            request.Fields = "id";
+            var folder = request.Execute();
+
+            Console.WriteLine($"Utworzono folder o Id: {folder.Id}");
+            await Task.CompletedTask;
         }
     }
 }

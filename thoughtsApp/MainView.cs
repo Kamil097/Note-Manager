@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Security.Cryptography.X509Certificates;
@@ -15,25 +16,39 @@ namespace thoughtsApp
 {
     public static class MainView
     {
-        public static (int option, bool loop) FolderListLoop() 
+        public static (string name, string id) FolderListLoop() 
         {
             (int option, bool loop) choice = (0, true);
+            
+            var folderInfo = new List<(string name, string id)>();
             do
             {
-                Console.Clear();
-                Console.WriteLine("CHOOSE FOLDER.\n\n");
-                Console.WriteLine("1. Journal.");
-                Console.WriteLine("2. Thoughts.");
-                Console.WriteLine("3. Rules.");
-                choice = MainViewLogic.OptionsLoopCondition(3);
-                if (choice.loop == true)
-                    break;
-            }
-            while (choice.option == 0); 
+                int x = 1;
+                Console.Clear();         
+                Task downloadTask = Task.Run(() => folderInfo = FileManager.getCurrentFolders());
 
-            return choice;
+                while (!downloadTask.IsCompleted)
+                    WaitingAnimation("Downloading folder info");
+
+                Console.WriteLine("CHOOSE FOLDER.\n");
+
+                foreach (var folder in folderInfo)
+                {
+                    Console.WriteLine($"{x}. {folder.name}"); x++;
+                }
+
+                Console.WriteLine("\nCreate new folder - 'create + name'");
+                Console.WriteLine("Delete a folder   - 'delete + index'");
+                choice = MainViewLogic.FolderLoopCondition(folderInfo);
+
+                if (choice.loop == true)
+                    return (null,null);
+            }
+            while (choice.option == 0);
+       
+            return (folderInfo[choice.option-1]);
         }
-        public static void MainWindowOptionListLoop(string folderId)
+        public static void MainWindowOptionListLoop(string folderId, string folderName)
         {
             (int option, bool loop) choice = (0, true);
             do
@@ -59,7 +74,7 @@ namespace thoughtsApp
                             RandomFileViewer(folderId);
                             break;
                         case 4:
-                            OperateOnNotes(folderId);
+                            OperateOnNotes(folderId,folderName);
                             break;
                         default: return;
                     }
@@ -100,7 +115,7 @@ namespace thoughtsApp
         }
         public static void FilesLookup((string name, string id) fileInfo, string text)
         {
-            Console.WriteLine($"Notatka: {fileInfo.name}");
+            Console.WriteLine($"Notatka: {fileInfo.name}\n");
             Console.WriteLine(text);
         }
         public static void RandomFileViewer(string folderId)
@@ -127,7 +142,7 @@ namespace thoughtsApp
                 if (continuation.edit)
                     Console.WriteLine("Add text to your current note.");
                 else
-                    Console.WriteLine("| X- Go Back | XD - Leave Program |\n| Next - Next Note | Prev - Previous Note |\n| Update - Update Note | Delete - Delete Note");
+                    Console.WriteLine("| X- Go Back | XD - Leave Program |\n| Next - Next Note | Prev - Previous Note |\n| Update - Update Note | Delete - Delete Note |\n");
 
                 var text = FileManager.GetFileText(list[continuation.note].id);
                 FilesLookup(list[continuation.note], text);
@@ -136,8 +151,10 @@ namespace thoughtsApp
             }
             while (continuation.loop);
         }
-        public static void OperateOnNotes(string folderId)
+        public static void OperateOnNotes(string folderId,string folderName)
         {
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            string combinedNotes = Path.Combine(FileConfig.combinedNotes, "combined"+ textInfo.ToTitleCase(folderName)+".json");
             bool isDownloading = true;
             FileManager.DownloadCompleted += () => isDownloading = false;
             (int option, bool exit) info = (0,false);
@@ -157,12 +174,12 @@ namespace thoughtsApp
                     {
                         case 1:
                             Console.Clear();
-                            Task downloadTask = Task.Run(() => FileManager.DownloadAllNotesJson(folderId));
+                            Task downloadTask = Task.Run(() => FileManager.DownloadAllNotesJson(folderId, combinedNotes));
                             while (isDownloading)
                                 WaitingAnimation("Downloading");
                             break;
                         case 2:
-                            ViewExpressionSentences();
+                            ViewExpressionSentences(combinedNotes);
                             break;
                         case 3:
                             Console.WriteLine("Trzeci");
@@ -181,7 +198,7 @@ namespace thoughtsApp
             }
             while (!info.exit);
         }
-        public static void ViewExpressionSentences()
+        public static void ViewExpressionSentences(string combinedNotes)
         {
             (int option, bool exit) info = (0, false);
             do
@@ -192,15 +209,15 @@ namespace thoughtsApp
                 if (Verifiers.ExitConditions(expression)) // it makes sense to do it here trust me
                     break;
 
-                var expressionSentences = MainViewLogic.GetExpressionSentences(expression);
+                var expressionSentences = MainViewLogic.GetExpressionSentences(expression,combinedNotes);
                 if (expressionSentences.Count > 0)
-                    ViewExpressionSentencesChoice(expressionSentences,expression);
+                    ViewExpressionSentencesChoice(expressionSentences,expression,combinedNotes);
 
             }
             while (true); // I know, hurts my feelings as well
 
         }
-        public static void ViewExpressionSentencesChoice(List<(string name, List<string> sentence)> expressionSentences,string expression) 
+        public static void ViewExpressionSentencesChoice(List<(string name, List<string> sentence)> expressionSentences,string expression,string combinedNotes) 
         {
             (int option, bool exit) info = (0, false);
             do
@@ -212,16 +229,16 @@ namespace thoughtsApp
                 if (info.exit)
                     break;
                 else if(info.option!=0)
-                    ReadNoteBySentence(expressionSentences[info.option - 1].name,expression);
+                    ReadNoteBySentence(expressionSentences[info.option - 1].name,expression, combinedNotes);
                 Console.Clear();
 
             }
             while (true);
         }
-        public static void ReadNoteBySentence(string name, string expression)
+        public static void ReadNoteBySentence(string name, string expression,string combinedNotes)
         {
             Console.Clear();
-            JObject notatki = FileManager.GetJsonObject(FileConfig.combinedNotes);
+            JObject notatki = FileManager.GetJsonObject(combinedNotes);
             JArray array = (JArray)notatki["data"];
             var properNote = array.Where(x => x["name"].Value<string>()==name).FirstOrDefault();
             string text = properNote["text"].Value<string>();
