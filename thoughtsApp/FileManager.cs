@@ -46,14 +46,14 @@ namespace thoughtsApp
             });
             return service;
         }
-        public static string GetDateTimeName()
+        public static string GetDateTimeName(string prefix)
         {
-            return "note_" + DateTime.Now.ToString().Replace(':', '.') + ".txt";
+            return $"{prefix}_" + DateTime.Now.ToString().Replace(':', '.') + ".txt";
         }
         public static void CreateNote(string description, string path)
         {
 
-            File.AppendAllText(path + $"/{GetDateTimeName()}", description);
+            File.AppendAllText(path + $"/{GetDateTimeName("note")}", description);
         }
         public static async void UploadNotesToGoogleDrive(string localDirPath, string folderId)
         {
@@ -115,10 +115,10 @@ namespace thoughtsApp
             var result = await request.ExecuteAsync(CancellationToken.None);
             await Task.CompletedTask;
         }
-        public static async Task SendNewNote(string description, string folderId)
+        public static async Task SendNewNote(string description, string folderId, string name)
         {
             string encryptedMessage = Encryptor.Encrypt(description,FileConfig.encryptionKey);
-            string name = GetDateTimeName();
+            name = GetDateTimeName(name);
             var service = googleService();
             var fileMetaData = new Google.Apis.Drive.v3.Data.File()
             {

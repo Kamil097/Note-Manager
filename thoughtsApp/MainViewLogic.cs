@@ -23,8 +23,24 @@ namespace thoughtsApp
                 if (Verifiers.ExitConditions(text))
                     return false;
 
-                await FileManager.SendNewNote(text, folderId);
+                await FileManager.SendNewNote(text, folderId,"note");
                 await Task.Delay(1000);
+            }
+            finally
+            {
+                Console.Clear();
+            }
+            return true;
+        }
+        public static async Task<bool> UploadFileAsync(string folderId,string name, string text)
+        {
+            try
+            {   
+                if (Verifiers.ExitConditions(text))
+                    return false;
+
+                await FileManager.SendNewNote(text, folderId,name);
+                //await Task.Delay(1000);
             }
             finally
             {

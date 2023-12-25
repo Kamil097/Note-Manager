@@ -55,9 +55,10 @@ namespace thoughtsApp
             {
                 Console.Clear();
                 Console.WriteLine("1. Upload your thought.");
-                Console.WriteLine("2. View thoughts explorer.");
-                Console.WriteLine("3. View random thought.");
-                Console.WriteLine("4. Perform operations on notes.");
+                Console.WriteLine("2. Upload text from file.");
+                Console.WriteLine("3. View thoughts explorer.");
+                Console.WriteLine("4. View random thought.");
+                Console.WriteLine("5. Perform operations on notes.");
                 choice = MainViewLogic.OptionsLoopCondition(4);
                 if (choice.option != 0)
                 {
@@ -68,12 +69,15 @@ namespace thoughtsApp
                             ThoughtLoop(folderId);
                             break;
                         case 2:
-                            DriveExplorer(folderId);
+                            UploadFile(folderId);
                             break;
                         case 3:
-                            RandomFileViewer(folderId);
+                            DriveExplorer(folderId);
                             break;
                         case 4:
+                            RandomFileViewer(folderId);
+                            break;
+                        case 5:
                             OperateOnNotes(folderId,folderName);
                             break;
                         default: return;
@@ -81,6 +85,39 @@ namespace thoughtsApp
                 }
             }
             while (!choice.loop); 
+        }
+        public static void UploadFile(string folderId)
+        {
+
+                Console.Clear();
+                Console.WriteLine("Welcome to file uploader!");
+                Console.WriteLine("----------------------------\n\n");
+                Console.WriteLine("Insert path to file you'd like to upload.");
+                string path = Console.ReadLine();
+                string text = "";
+                try {
+
+                    if (File.Exists(path))
+                    {
+                        using (var reader = new StreamReader(path))
+                        {
+                            text = reader.ReadToEnd();
+                        }
+                    }
+                Console.WriteLine("Podaj nazwę pliku: ");
+                string name = Console.ReadLine();   
+                name = FileManager.GetDateTimeName(name);
+                Task downloadTask = Task.Run(() => MainViewLogic.UploadFileAsync(folderId, name, text));
+                while (!downloadTask.IsCompleted)
+                    WaitingAnimation("Uploading file");
+
+            }
+                catch 
+            {
+                Console.WriteLine("Nie udało się odczytać pliku.");
+                Console.WriteLine("Press enter to continue.");
+                Console.ReadLine();
+            }
         }
         public static void ThoughtLoop(string folderId)
         {
