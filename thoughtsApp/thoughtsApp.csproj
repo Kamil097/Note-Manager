@@ -19,12 +19,8 @@
 
   <ItemGroup>
     <None Update="FileFolder\credentials.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="FileFolder\" />
   </ItemGroup>
 
 </Project>
