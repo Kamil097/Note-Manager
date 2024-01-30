@@ -24,13 +24,13 @@ namespace thoughtsApp
         public static event Action DownloadCompleted;
         public static event Action FoldersDownloadStarted;
         public static event Action FoldersDownloadCompleted;
-        public static void Initialize()
-        {
-            if (!Directory.Exists(FileConfig.FullPath))
-            {
-                Directory.CreateDirectory(FileConfig.FullPath);
-            }
-        }
+        //public static void Initialize()
+        //{
+        //    if (!Directory.Exists(FileConfig.FullPath))
+        //    {
+        //        Directory.CreateDirectory(FileConfig.FullPath);
+        //    }
+        //}
         public static string[] getFiles(string dirPath)
         {
             var files = Directory.GetFiles(dirPath);
@@ -87,7 +87,7 @@ namespace thoughtsApp
                 }
             }
         }
-        public static async Task UpdateNoteToGoogleDrive(string fileId,string text)
+        public static async Task UpdateNoteToGoogleDrive(string fileId, string text)
         {
             var service = googleService();
             var fileMetaData = new Google.Apis.Drive.v3.Data.File();
@@ -97,33 +97,33 @@ namespace thoughtsApp
             var request = service.Files.Update(fileMetaData, fileId, stream, "text/plain");
             var result = await request.UploadAsync(CancellationToken.None);
 
-                if (result.Status == UploadStatus.Failed)
-                {
-                    Console.WriteLine($"Error uploading file: {result.Exception.Message}");
-                }
-                else
-                {
-                    Console.WriteLine($"File with id: {request.ResponseBody.Id} has been uploaded.");
-                }
-                Thread.Sleep(1000);
+            if (result.Status == UploadStatus.Failed)
+            {
+                Console.WriteLine($"Error uploading file: {result.Exception.Message}");
+            }
+            else
+            {
+                Console.WriteLine($"File with id: {request.ResponseBody.Id} has been uploaded.");
+            }
+            Thread.Sleep(1000);
             await Task.CompletedTask;
         }
-        public static async Task DeleteNoteFromGoogleDrive(string fileId) 
+        public static async Task DeleteNoteFromGoogleDrive(string fileId)
         {
             var service = googleService();
             var request = service.Files.Delete(fileId);
             var result = await request.ExecuteAsync(CancellationToken.None);
             await Task.CompletedTask;
         }
-        public static async Task SendNewNote(string description, string folderId, string name)
+        public static async Task SendNewNote(string description, string name)
         {
-            string encryptedMessage = Encryptor.Encrypt(description,FileConfig.encryptionKey);
+            string encryptedMessage = Encryptor.Encrypt(description, FileConfig.encryptionKey);
             name = GetDateTimeName(name);
             var service = googleService();
             var fileMetaData = new Google.Apis.Drive.v3.Data.File()
             {
                 Name = name,
-                Parents = new List<string> { folderId }
+                Parents = new List<string> { FileConfig.folderId }
             };
             using (MemoryStream stream = new MemoryStream())
             {
@@ -143,7 +143,7 @@ namespace thoughtsApp
                     Console.WriteLine($"File with id: {request.ResponseBody.Id} has been uploaded.");
                 }
             }
-            await Task.CompletedTask;
+            await Task.CompletedTask; ///idk about that bruh
         }
         public static List<(string name, string id)> GetNotesInfoFromDrive(string folderId)
         {
@@ -172,7 +172,7 @@ namespace thoughtsApp
             string encryptedText = Encryptor.Decrypt(tekst, FileConfig.encryptionKey);
             return encryptedText;
         }
-        public static async Task DownloadAllNotesJson(string folderId,string combinedNotes)
+        public static async Task DownloadAllNotesJson(string folderId, string combinedNotes)
         {
             if (!File.Exists(combinedNotes))
             {
@@ -180,7 +180,7 @@ namespace thoughtsApp
             }
             JObject data = new JObject();//GetJsonObject(combinedNotes);//GetJsonObject(combinedNotes);
             data["data"] = new JArray();
-            JArray array = (JArray) data ["data"];
+            JArray array = (JArray)data["data"];
 
             DownloadStarted?.Invoke();
             var service = googleService();
@@ -198,7 +198,7 @@ namespace thoughtsApp
                     using (StreamReader reader = new StreamReader(stream))
                     {
                         string fileText = reader.ReadToEnd();
-                        string encryptedText = Encryptor.Decrypt(fileText, FileConfig.encryptionKey);   
+                        string encryptedText = Encryptor.Decrypt(fileText, FileConfig.encryptionKey);
                         JObject newNote = createNoteObj(file.Name, encryptedText);
                         array.Add(newNote);
                     }

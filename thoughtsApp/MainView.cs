@@ -16,15 +16,15 @@ namespace thoughtsApp
 {
     public static class MainView
     {
-        public static (string name, string id) FolderListLoop() 
+        public static (string name, string id) FolderListLoop()
         {
             (int option, bool loop) choice = (0, true);
-            
+
             var folderInfo = new List<(string name, string id)>();
             do
             {
                 int x = 1;
-                Console.Clear();         
+                Console.Clear();
                 Task downloadTask = Task.Run(() => folderInfo = FileManager.getCurrentFolders());
 
                 while (!downloadTask.IsCompleted)
@@ -42,11 +42,11 @@ namespace thoughtsApp
                 choice = MainViewLogic.FolderLoopCondition(folderInfo);
 
                 if (choice.loop == true)
-                    return (null,null);
+                    return (null, null);
             }
             while (choice.option == 0);
-       
-            return (folderInfo[choice.option-1]);
+
+            return (folderInfo[choice.option - 1]);
         }
         public static void MainWindowOptionListLoop(string folderId, string folderName)
         {
@@ -78,41 +78,42 @@ namespace thoughtsApp
                             RandomFileViewer(folderId);
                             break;
                         case 5:
-                            OperateOnNotes(folderId,folderName);
+                            OperateOnNotes(folderId, folderName);
                             break;
                         default: return;
                     }
                 }
             }
-            while (!choice.loop); 
+            while (!choice.loop);
         }
         public static void UploadFile(string folderId)
         {
 
-                Console.Clear();
-                Console.WriteLine("Welcome to file uploader!");
-                Console.WriteLine("----------------------------\n\n");
-                Console.WriteLine("Insert path to file you'd like to upload.");
-                string path = Console.ReadLine();
-                string text = "";
-                try {
+            Console.Clear();
+            Console.WriteLine("Welcome to file uploader!");
+            Console.WriteLine("----------------------------\n\n");
+            Console.WriteLine("Insert path to file you'd like to upload.");
+            string path = Console.ReadLine();
+            string text = "";
+            try
+            {
 
-                    if (File.Exists(path))
+                if (File.Exists(path))
+                {
+                    using (var reader = new StreamReader(path))
                     {
-                        using (var reader = new StreamReader(path))
-                        {
-                            text = reader.ReadToEnd();
-                        }
+                        text = reader.ReadToEnd();
                     }
+                }
                 Console.WriteLine("Podaj nazwę pliku: ");
-                string name = Console.ReadLine();   
+                string name = Console.ReadLine();
                 name = FileManager.GetDateTimeName(name);
                 Task downloadTask = Task.Run(() => MainViewLogic.UploadFileAsync(folderId, name, text));
                 while (!downloadTask.IsCompleted)
                     WaitingAnimation("Uploading file");
 
             }
-                catch 
+            catch
             {
                 Console.WriteLine("Nie udało się odczytać pliku.");
                 Console.WriteLine("Press enter to continue.");
@@ -184,17 +185,17 @@ namespace thoughtsApp
                 var text = FileManager.GetFileText(list[continuation.note].id);
                 FilesLookup(list[continuation.note], text);
 
-                continuation =  MainViewLogic.FileViewerLoop(continuation.note, list.Count - 1, continuation.edit, (text,list[continuation.note].id));
+                continuation = MainViewLogic.FileViewerLoop(continuation.note, list.Count - 1, continuation.edit, (text, list[continuation.note].id));
             }
             while (continuation.loop);
         }
-        public static void OperateOnNotes(string folderId,string folderName)
+        public static void OperateOnNotes(string folderId, string folderName)
         {
             TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
-            string combinedNotes = Path.Combine(FileConfig.combinedNotes, "combined"+ textInfo.ToTitleCase(folderName)+".json");
+            string combinedNotes = Path.Combine(FileConfig.combinedNotes, "combined" + textInfo.ToTitleCase(folderName) + ".json");
             bool isDownloading = true;
             FileManager.DownloadCompleted += () => isDownloading = false;
-            (int option, bool exit) info = (0,false);
+            (int option, bool exit) info = (0, false);
             do
             {
                 Console.Clear();
@@ -204,7 +205,7 @@ namespace thoughtsApp
                 Console.WriteLine("4. Some other option.");
                 info = MainViewLogic.OptionsLoopCondition(4);
 
-                if (info.option!=0)
+                if (info.option != 0)
                 {
                     //If Exitconditions is true, option == 0, default case is activated and you go back
                     switch (info.option)
@@ -246,38 +247,38 @@ namespace thoughtsApp
                 if (Verifiers.ExitConditions(expression)) // it makes sense to do it here trust me
                     break;
 
-                var expressionSentences = MainViewLogic.GetExpressionSentences(expression,combinedNotes);
+                var expressionSentences = MainViewLogic.GetExpressionSentences(expression, combinedNotes);
                 if (expressionSentences.Count > 0)
-                    ViewExpressionSentencesChoice(expressionSentences,expression,combinedNotes);
+                    ViewExpressionSentencesChoice(expressionSentences, expression, combinedNotes);
 
             }
             while (true); // I know, hurts my feelings as well
 
         }
-        public static void ViewExpressionSentencesChoice(List<(string name, List<string> sentence)> expressionSentences,string expression,string combinedNotes) 
+        public static void ViewExpressionSentencesChoice(List<(string name, List<string> sentence)> expressionSentences, string expression, string combinedNotes)
         {
             (int option, bool exit) info = (0, false);
             do
             {
-                ReadDictSentences(expressionSentences,expression);
+                ReadDictSentences(expressionSentences, expression);
                 Console.WriteLine("\n\n\nLookup given note:");
                 info = MainViewLogic.OptionsLoopCondition(expressionSentences.Count);
 
                 if (info.exit)
                     break;
-                else if(info.option!=0)
-                    ReadNoteBySentence(expressionSentences[info.option - 1].name,expression, combinedNotes);
+                else if (info.option != 0)
+                    ReadNoteBySentence(expressionSentences[info.option - 1].name, expression, combinedNotes);
                 Console.Clear();
 
             }
             while (true);
         }
-        public static void ReadNoteBySentence(string name, string expression,string combinedNotes)
+        public static void ReadNoteBySentence(string name, string expression, string combinedNotes)
         {
             Console.Clear();
             JObject notatki = FileManager.GetJsonObject(combinedNotes);
             JArray array = (JArray)notatki["data"];
-            var properNote = array.Where(x => x["name"].Value<string>()==name).FirstOrDefault();
+            var properNote = array.Where(x => x["name"].Value<string>() == name).FirstOrDefault();
             string text = properNote["text"].Value<string>();
 
 
@@ -286,7 +287,7 @@ namespace thoughtsApp
             Console.ReadLine();
             Console.Clear();
         }
-        public static void ReadDictSentences(List<(string name, List<string> sentence)> notes, string expression )
+        public static void ReadDictSentences(List<(string name, List<string> sentence)> notes, string expression)
         {
             int noteNumber = 0;
             if (notes.Count > 0)
@@ -295,11 +296,11 @@ namespace thoughtsApp
                 {
                     noteNumber++;
                     Console.WriteLine("\n----------------------------");
-                    Console.WriteLine(noteNumber+ ". " + note.name);
+                    Console.WriteLine(noteNumber + ". " + note.name);
                     Console.WriteLine("----------------------------\n");
                     foreach (var line in note.sentence)
                     {
-                        ReadSentenceWithColoredExpression(line+".", expression);
+                        ReadSentenceWithColoredExpression(line + ".", expression);
                     }
                 }
             }
@@ -308,7 +309,7 @@ namespace thoughtsApp
                 Console.WriteLine("Phrase wasn't found.");
             }
         }
-        public static void ReadSentenceWithColoredExpression(string sentence, string expression) 
+        public static void ReadSentenceWithColoredExpression(string sentence, string expression)
         {
             int startIndex = 0;
             while (startIndex < sentence.Length)
@@ -328,10 +329,10 @@ namespace thoughtsApp
                     break;
                 }
             }
-        
-        
+
+
         }
-        public static void WaitingAnimation(string text) 
+        public static void WaitingAnimation(string text)
         {
             Console.Clear();
             for (int i = 1; i < 3; i++)

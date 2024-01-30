@@ -23,7 +23,7 @@ namespace thoughtsApp
                 if (Verifiers.ExitConditions(text))
                     return false;
 
-                await FileManager.SendNewNote(text, folderId,"note");
+                await FileManager.SendNewNote(text, "note");
                 await Task.Delay(1000);
             }
             finally
@@ -32,14 +32,14 @@ namespace thoughtsApp
             }
             return true;
         }
-        public static async Task<bool> UploadFileAsync(string folderId,string name, string text)
+        public static async Task<bool> UploadFileAsync(string folderId, string name, string text)
         {
             try
-            {   
+            {
                 if (Verifiers.ExitConditions(text))
                     return false;
 
-                await FileManager.SendNewNote(text, folderId,name);
+                await FileManager.SendNewNote(text,name);
                 //await Task.Delay(1000);
             }
             finally
@@ -62,12 +62,12 @@ namespace thoughtsApp
             int.TryParse(text, out int option);
             return (option, false);
         }
-        public static (int option, bool loop) FolderLoopCondition( List<(string name, string id)> folderInfo) 
+        public static (int option, bool loop) FolderLoopCondition(List<(string name, string id)> folderInfo)
         {
             string text = Console.ReadLine();
             string[] splitted = text.Split(" ");
 
-            if (splitted.Count()==2)
+            if (splitted.Count() == 2)
             {
                 if (splitted[0].Equals("create", StringComparison.OrdinalIgnoreCase))
                 {
@@ -114,17 +114,17 @@ namespace thoughtsApp
             return true;
         }
         //For loop to continue, we have to give TRUE
-        public static  (bool loop, int note, bool edit) FileViewerLoop(int note, int limit,bool doEdit, (string text, string id) fileinfo)
+        public static (bool loop, int note, bool edit) FileViewerLoop(int note, int limit, bool doEdit, (string text, string id) fileinfo)
         {
 
             bool edit = false;
             string text = Console.ReadLine();
             bool loop = !Verifiers.ExitConditions(text);
-            string encryptedText = Encryptor.Encrypt(fileinfo.text + text,FileConfig.encryptionKey);
+            string encryptedText = Encryptor.Encrypt(fileinfo.text + text, FileConfig.encryptionKey);
             if (doEdit)
             {
-                 var updating = FileManager.UpdateNoteToGoogleDrive(fileinfo.id, encryptedText);
-                 while (!updating.IsCompleted)
+                var updating = FileManager.UpdateNoteToGoogleDrive(fileinfo.id, encryptedText);
+                while (!updating.IsCompleted)
                 {
                     MainView.WaitingAnimation("updading");
                 } // im a moron, but it works
@@ -152,12 +152,12 @@ namespace thoughtsApp
             {
                 loop = false;
                 var deleting = FileManager.DeleteNoteFromGoogleDrive(fileinfo.id);
-                while(!deleting.IsCompleted) 
+                while (!deleting.IsCompleted)
                 {
                     MainView.WaitingAnimation("deleting");
                 }
             }
-            return (loop, note,edit);
+            return (loop, note, edit);
         }
         public static (bool loop, int note) RandomThoughtLoop(int note, int limit)
         {
@@ -170,7 +170,7 @@ namespace thoughtsApp
             return (!Verifiers.ExitConditions(text), note);
         }
         //Key is note name, and list represents sentences of such note with given expression.
-        public static List<(string name, List<string> sentence)> GetExpressionSentences(string expression,string combinedNotes)
+        public static List<(string name, List<string> sentence)> GetExpressionSentences(string expression, string combinedNotes)
         {
             List<(string name, List<string> sentence)> list = new List<(string name, List<string> sentence)>();
             string line;

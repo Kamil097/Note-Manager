@@ -1,13 +1,12 @@
 ﻿using thoughtsApp;
+using thoughtsApp.Tui;
+using static System.Console;
 
-FileManager.Initialize();
-//FileManager.CreateNewFolder();
-while (true)
-{
-    var choice = MainView.FolderListLoop();
+//var choice = MainView.FolderListLoop();
 
-    if (choice.name!=null)
-    {
-        MainView.MainWindowOptionListLoop(choice.id,choice.name);
-    }
-}
+//if (choice.name != null)
+//{
+//    MainView.MainWindowOptionListLoop(choice.id, choice.name);
+//}
+MenuLogic menuLogic = new MenuLogic();
+menuLogic.RunMainMenu();
