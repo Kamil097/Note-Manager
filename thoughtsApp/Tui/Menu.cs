@@ -62,7 +62,7 @@ namespace thoughtsApp.Tui
                     SelectedIndex++;
                 }
             } while (keyPressed != ConsoleKey.Enter);
-            DisplayOptions();
+            //DisplayOptions();
             return SelectedIndex;
         }
     }

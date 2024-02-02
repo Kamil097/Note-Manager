@@ -2,12 +2,15 @@
 using Google.Apis.Drive.v3;
 using Google.Apis.Services;
 using Google.Apis.Upload;
+using Microsoft.VisualBasic;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
@@ -227,7 +230,7 @@ namespace thoughtsApp
                 return jobject;
             }
         }
-        public static List<(string name, string Id)> getCurrentFolders()
+        public static async Task<List<(string name, string Id)>> getCurrentFolders()
         {
             string folderId = "1y00Xd9fVkm7GeDF5gYspTKRP1nER9ldG";
 

@@ -1,12 +1,11 @@
 ﻿using thoughtsApp;
 using thoughtsApp.Tui;
-using static System.Console;
-
-//var choice = MainView.FolderListLoop();
-
-//if (choice.name != null)
-//{
-//    MainView.MainWindowOptionListLoop(choice.id, choice.name);
-//}
-MenuLogic menuLogic = new MenuLogic();
+using static thoughtsApp.Tui.MenuLogic;
+do
+{
+    Visuals.WaitingAnimation("Downloading folder info");
+}
+while(!FolderChoiceMenu().IsCompleted);
+    
+MenuTemplateLogic menuLogic = new MenuTemplateLogic();
 menuLogic.RunMainMenu();

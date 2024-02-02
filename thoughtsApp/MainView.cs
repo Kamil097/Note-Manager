@@ -16,7 +16,7 @@ namespace thoughtsApp
 {
     public static class MainView
     {
-        public static (string name, string id) FolderListLoop()
+        public static async Task<(string name, string id)> FolderListLoop()
         {
             (int option, bool loop) choice = (0, true);
 
@@ -25,10 +25,10 @@ namespace thoughtsApp
             {
                 int x = 1;
                 Console.Clear();
-                Task downloadTask = Task.Run(() => folderInfo = FileManager.getCurrentFolders());
+                folderInfo = await FileManager.getCurrentFolders();
 
-                while (!downloadTask.IsCompleted)
-                    WaitingAnimation("Downloading folder info");
+                //while (!downloadTask.IsCompleted)
+                //    WaitingAnimation("Downloading folder info");
 
                 Console.WriteLine("CHOOSE FOLDER.\n");
 

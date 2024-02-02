@@ -15,9 +15,9 @@ namespace thoughtsApp.Tui
             ("4.","View random thought."),
             ("5.","Perform operation on notes.")
         });
-        public static Menu UploadThoughtMenu = new Menu("Uplaod your thought!", new (string option, object property)[] {
-            ("1.","Back to menu."),
-            ("2.","Break."),
+        public static Menu InsertFromFileMenu = new Menu("Uplaod your thought!", new (string option, object property)[] {
+            ("1.","Insert path."),
+            ("2.","Choose .txt file."),
         });
     }
 }
