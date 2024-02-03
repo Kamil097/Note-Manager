@@ -22,5 +22,6 @@ namespace thoughtsApp.Tui
                 Console.Clear();
             };
         }
+
     }
 }

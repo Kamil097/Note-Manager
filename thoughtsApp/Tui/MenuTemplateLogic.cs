@@ -15,12 +15,49 @@ namespace thoughtsApp.Tui
     /// </summary>
     public class MenuTemplateLogic
     {
+        public async void RunInitialActionMenu()
+        {
+            var foldersInformation = Task.Run(()=>MenuLogic.PrepareFolderListMenu());
+            while (!foldersInformation.IsCompleted)
+                WaitingAnimation("Downloading folder info");
+            var result = await foldersInformation; 
+
+            var menu = MenuTemplates.InitialActionMenu;
+            int mainOption = menu.Run() + 1;
+            Clear();
+            switch (mainOption)
+            {
+                case 1:
+                    int option1 = result.menu.Run();
+                    if (option1 == result.infos.Count)
+                        break;
+                    FileConfig.folderId = result.infos[option1].Id;
+                    FileConfig.folderName = result.infos[option1].Name;
+                    RunMainMenu();
+                    break;
+                case 2:
+                    WriteLine("Insert folder name:");
+                    var createTask = FileManager.CreateNewFolder(ReadLine().Trim().Replace(" ", "_"));
+                    while (!createTask.IsCompleted)
+                        Visuals.WaitingAnimation("Creating folder");
+                    break;
+                case 3:
+                    int option2 = result.menu.Run();
+                    var deleteTask = FileManager.DeleteNoteFromGoogleDrive(result.infos[option2].Id);
+                    while (!deleteTask.IsCompleted)
+                        Visuals.WaitingAnimation("Deleting folder");
+                    break;
+                case 4:
+                    return;
+            }
+            RunInitialActionMenu();
+        }
         public async void RunMainMenu()
         {
             var menu = MenuTemplates.MainMenu;
-            int option = menu.Run() + 1;
+            int mainOption = menu.Run() + 1;
             Clear();
-            switch (option)
+            switch (mainOption)
             {
                 case 1:
                     WriteLine("Write your thought");
@@ -31,6 +68,16 @@ namespace thoughtsApp.Tui
                     RunInsertFromFileMenu();
                     break;
                 case 3:
+                    var notesInformation = Task.Run(()=>MenuLogic.GetMenuAndNotesInfo());
+                    while (!notesInformation.IsCompleted)
+                        WaitingAnimation("Downloading notes information");
+                  
+                    var result = await notesInformation;
+                    int option1 = result.menu.Run();
+                    if (option1 == result.infos.Count)
+                        break;
+                    MenuLogic.FileViewer(result.infos,option1);     
+                    //utworzyć fileViewer jako klase podobną do menu, bedzie git
                     break;
                 case 4:
                     break;
@@ -39,6 +86,7 @@ namespace thoughtsApp.Tui
             }
             RunMainMenu();
         }
+       
         public async void RunInsertFromFileMenu()
         {
             var menu = MenuTemplates.InsertFromFileMenu;
@@ -55,12 +103,12 @@ namespace thoughtsApp.Tui
                     WriteLine("Insert file name:");
                     string name = FileManager.GetDateTimeName(ReadLine());
 
-                    var task = MainViewLogic.UploadFileAsync(FileConfig.folderId, name, text);
+                    var task = Task.Run(()=>FileManager.SendNewNote(text, name));
                     while (task.IsCompleted)
                         WaitingAnimation("Uploading file");
+                    await task;
                     break;
                 case 2:
-                    //.GetTextFromFile(); 
                     WriteLine("Not implemented (if ever xd)");
                     break;
             }

@@ -19,5 +19,10 @@ namespace thoughtsApp.Tui
             ("1.","Insert path."),
             ("2.","Choose .txt file."),
         });
+        public static Menu InitialActionMenu = new Menu("Choose what you wanna do:", new (string option, object property)[] {
+            ("1.","Manage notes"),
+            ("2.","Create folder"),
+            ("3.","Delete folder")
+        });
     }
 }

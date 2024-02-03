@@ -148,13 +148,13 @@ namespace thoughtsApp
             }
             await Task.CompletedTask; ///idk about that bruh
         }
-        public static List<(string name, string id)> GetNotesInfoFromDrive(string folderId)
+        public static async Task<List<(string name, string id)>> GetNotesInfoFromDrive()
         {
             List<(string name, string id)> pliki = new List<(string name, string id)>();
 
             var service = googleService();
             var request = service.Files.List();
-            request.Q = $"'{folderId}' in parents";
+            request.Q = $"'{FileConfig.folderId}' in parents";
             var files = request.Execute();
             foreach (var file in files.Files)
             {

@@ -40,7 +40,7 @@ namespace thoughtsApp.Tui
                     ForegroundColor = ConsoleColor.White;
                     BackgroundColor = ConsoleColor.Black;
                 }
-                WriteLine($"{prefix} << {currentOption}>>");
+                WriteLine($"{prefix} << {currentOption} >>");
             }
             ResetColor();
         }
@@ -53,16 +53,21 @@ namespace thoughtsApp.Tui
                 DisplayOptions();
                 ConsoleKeyInfo keyInfo = ReadKey(true);
                 keyPressed = keyInfo.Key;
-                if (keyPressed == ConsoleKey.UpArrow && SelectedIndex > 0)
+                if (keyPressed == ConsoleKey.UpArrow)
                 {
-                    SelectedIndex--;
+                    if (SelectedIndex == 0)
+                        SelectedIndex = Options.Count() - 1;
+                    else
+                        SelectedIndex--;
                 }
-                else if (keyPressed == ConsoleKey.DownArrow && SelectedIndex < Options.Count() - 1)
+                else if (keyPressed == ConsoleKey.DownArrow)
                 {
-                    SelectedIndex++;
+                    if (SelectedIndex == Options.Count() - 1)
+                        SelectedIndex = 0;
+                    else
+                        SelectedIndex++;
                 }
             } while (keyPressed != ConsoleKey.Enter);
-            //DisplayOptions();
             return SelectedIndex;
         }
     }
