@@ -8,21 +8,22 @@ namespace thoughtsApp.Tui
 {
     public static class MenuTemplates
     {
-        public static Menu MainMenu = new Menu("Thoughts app.", new (string option, object property)[] {
-            ("1.","Upload your thought."),
-            ("2.","Upload text from file."),
-            ("3.","View thoughts explorer."),
-            ("4.","View random thought."),
-            ("5.","Perform operation on notes.")
+        public static Menu MainMenu = new Menu("Thoughts app.",MenuLogic.emptyAction, new (string functionArgument, string option)[]  {
+            ("","1. Upload your thought."),
+            ("","2. Upload text from file."),
+            ("","3. View thoughts explorer."),
+            ("","4. View random thought."),
+            ("","5. Find given expression.")
+        }
+        );
+        public static Menu InsertFromFileMenu = new Menu("Uplaod your thought!", MenuLogic.emptyAction,new (string functionArgument, string option)[]  {
+            ("","1. Insert path."),
+            ("","2. Choose .txt file."),
         });
-        public static Menu InsertFromFileMenu = new Menu("Uplaod your thought!", new (string option, object property)[] {
-            ("1.","Insert path."),
-            ("2.","Choose .txt file."),
-        });
-        public static Menu InitialActionMenu = new Menu("Choose what you wanna do:", new (string option, object property)[] {
-            ("1.","Manage notes"),
-            ("2.","Create folder"),
-            ("3.","Delete folder")
+        public static Menu InitialActionMenu = new Menu("Choose what you wanna do:", MenuLogic.emptyAction, new (string functionArgument, string option)[]  {
+            ("","1. Manage notes"),
+            ("","2. Create folder"),
+            ("","3. Delete folder")
         });
     }
-}
+} 

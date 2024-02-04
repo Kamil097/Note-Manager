@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
@@ -43,52 +44,52 @@ namespace thoughtsApp.Tui
             result = "";
             return false;
         }
-        public static async Task<(Menu menu, List<(string Name, string Id)> infos)> PrepareFolderListMenu()
+        public static async Task<(Menu menu, List<(string Name, string Id)> infos)> GetMenuAndFoldersInfo()
         {
             var folderInfo = await FileManager.getCurrentFolders();
-            List<(string option, object property)> options = new List<(string option, object property)>();
+            var options = new List<(string functionArgument,string options)>();
             for (int i = 0; i < folderInfo.Count; i++)
             {
-                options.Add(($"{i + 1}.", $"{folderInfo[i].name}"));
+                options.Add(("",$"{i + 1}. {folderInfo[i].name}"));
             }
-            options.Add(("Go", "back"));
-            return (new Menu("Choose folder", options.ToArray()), (folderInfo));
+            options.Add(("","Go back"));
+            return (new Menu("Choose folder",emptyAction, options.ToArray()), (folderInfo));
         }
-
         public static async Task<(Menu menu, List<(string Name, string Id)> infos)> GetMenuAndNotesInfo()
         {
             var notesInfo = await FileManager.GetNotesInfoFromDrive();
-            List<(string option, object property)> options = new List<(string option, object property)>();
-
+            var options = new List<(string functionArgument, string options)>();
             for (int i = 0; i < notesInfo.Count; i++)
             {
-                options.Add(($"{i + 1}.", $"{notesInfo[i].name}"));
+                options.Add(("",$"{i + 1}. {notesInfo[i].name}"));
             }
-            options.Add(("Go", "back"));
-            return (new Menu("List of current notes:",options.ToArray()), (notesInfo));     
-        } 
-        public static void FileViewer(List<(string name, string id)> list, int note)
+            options.Add(("","Go back"));
+            return (new Menu("List of current notes:",emptyAction,options.ToArray()), (notesInfo));     
+        }
+        public static async Task ViewExpressionSentences(string phrase) 
         {
-            (bool loop, int note, bool edit) continuation = (true, note, false);
-            do
-            {
-                Console.Clear();
-                if (continuation.edit)
-                    Console.WriteLine("Add text to your current note.");
-                else
-                    Console.WriteLine("| X- Go Back | XD - Leave Program |\n| Next - Next Note | Prev - Previous Note |\n| Update - Update Note | Delete - Delete Note |\n");
-
-                var text = FileManager.GetFileText(list[continuation.note].id);
-                FilesLookup(list[continuation.note], text);
-
-                //continuation = MainViewLogic.FileViewerLoop(continuation.note, list.Count - 1, continuation.edit, (text, list[continuation.note].id));
-            }
-            while (continuation.loop);
+            //1. Funkcja która pobiera wszystkie notatki, i od razu po pobraniu jaiejkowlwiek sprawdza, czy dany expression się w niej znajduje
+            //2. Wypisujemy zdania które w ramach tej jednej notatki zawierają daną frazę, ta fraza ma być kolorowa
+            //3. 
         }
         public static void FilesLookup((string name, string id) fileInfo, string text)
         {
             Console.WriteLine($"Notatka: {fileInfo.name}\n");
             Console.WriteLine(text);
         }
+        public static async Task GetExpressionSentences(string phrase, string noteId) 
+        {
+            var text = await FileManager.GetFileText(noteId);
+            var sentences = text.Split('.').ToList();
+            List<string> exprSentences = new List<string>();
+            foreach (var sentence in sentences)
+            {
+                if (sentence.Contains(phrase))
+                {
+                    exprSentences.Add(sentence);
+                }
+            }
+        }
+        public static void emptyAction(string text) {}
     }
 }

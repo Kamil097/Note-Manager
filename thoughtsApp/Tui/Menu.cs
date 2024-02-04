@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
+using static Google.Apis.Drive.v3.ChannelsResource;
 using static System.Console;
 
 namespace thoughtsApp.Tui
@@ -10,23 +12,26 @@ namespace thoughtsApp.Tui
     public class Menu
     {
         private int SelectedIndex;
-        private (string option, object property)[] Options;
+        private (string functionArgument, string option)[] Infos;
         private string Prompt;
+        private Action<string> DelegateFunction;
+      
 
-        public Menu(string prompt, (string option, object property)[] options)
+        public Menu(string prompt,  Action<string> function, (string functionArgument, string option)[] infos)
         {
             Prompt = prompt;
-            Options = options;
+            Infos = infos;
             SelectedIndex = 0;
+            DelegateFunction = function;    
         }
         private void DisplayOptions()
         {
             ForegroundColor = ConsoleColor.White;
             BackgroundColor = ConsoleColor.Black;
             WriteLine(Prompt);
-            for (int i = 0; i < Options.Length; i++)
+            for (int i = 0; i < Infos.Length; i++)
             {
-                string currentOption = $" {Options[i].option} {Options[i].property}";
+                string currentOption = $" {Infos[i].option}";
                 string prefix;
                 if (i == SelectedIndex)
                 {
@@ -41,8 +46,9 @@ namespace thoughtsApp.Tui
                     BackgroundColor = ConsoleColor.Black;
                 }
                 WriteLine($"{prefix} << {currentOption} >>");
+                ResetColor();
+                DelegateFunction($"{Infos[i].functionArgument}"); //run delegate
             }
-            ResetColor();
         }
         public int Run()
         {
@@ -56,13 +62,13 @@ namespace thoughtsApp.Tui
                 if (keyPressed == ConsoleKey.UpArrow)
                 {
                     if (SelectedIndex == 0)
-                        SelectedIndex = Options.Count() - 1;
+                        SelectedIndex = Infos.Count() - 1;
                     else
                         SelectedIndex--;
                 }
                 else if (keyPressed == ConsoleKey.DownArrow)
                 {
-                    if (SelectedIndex == Options.Count() - 1)
+                    if (SelectedIndex == Infos.Count() - 1)
                         SelectedIndex = 0;
                     else
                         SelectedIndex++;

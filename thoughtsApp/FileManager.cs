@@ -92,10 +92,11 @@ namespace thoughtsApp
         }
         public static async Task UpdateNoteToGoogleDrive(string fileId, string text)
         {
+            string encryptedText = Encryptor.Encrypt(text, FileConfig.encryptionKey);
             var service = googleService();
             var fileMetaData = new Google.Apis.Drive.v3.Data.File();
             var stream = new MemoryStream();
-            byte[] textBytes = Encoding.UTF8.GetBytes(text);
+            byte[] textBytes = Encoding.UTF8.GetBytes(encryptedText);
             stream.Write(textBytes, 0, textBytes.Length);
             var request = service.Files.Update(fileMetaData, fileId, stream, "text/plain");
             var result = await request.UploadAsync(CancellationToken.None);
@@ -155,7 +156,7 @@ namespace thoughtsApp
             var service = googleService();
             var request = service.Files.List();
             request.Q = $"'{FileConfig.folderId}' in parents";
-            var files = request.Execute();
+            var files = await request.ExecuteAsync();
             foreach (var file in files.Files)
             {
                 pliki.Add((file.Name, file.Id));
@@ -163,12 +164,12 @@ namespace thoughtsApp
 
             return pliki;
         }
-        public static string GetFileText(string fileId)
+        public static async Task<string> GetFileText(string fileId)
         {
             var service = googleService();
             var requestFile = service.Files.Get(fileId);
             var stream = new MemoryStream();
-            requestFile.Download(stream);
+            await requestFile.DownloadAsync(stream);
             stream.Position = 0;
             StreamReader reader = new StreamReader(stream);
             var tekst = reader.ReadToEnd();
@@ -233,19 +234,21 @@ namespace thoughtsApp
         public static async Task<List<(string name, string Id)>> getCurrentFolders()
         {
             string folderId = "1y00Xd9fVkm7GeDF5gYspTKRP1nER9ldG";
-
-            List<(string name, string id)> pliki = new List<(string name, string id)>();
+           
+                List<(string name, string id)> pliki = new List<(string name, string id)>();
 
             var service = googleService();
             var request = service.Files.List();
             request.Q = $"'{folderId}' in parents";
             FoldersDownloadStarted?.Invoke();
-            var folders = request.Execute().Files.ToList().Where(x => x.MimeType == "application/vnd.google-apps.folder").ToList();
+            var result = await request.ExecuteAsync();//.Files.ToList().Where(x => x.MimeType == "application/vnd.google-apps.folder").ToList();
+            var folders =  result.Files.ToList().Where(x => x.MimeType == "application/vnd.google-apps.folder").ToList();
             foreach (var file in folders)
             {
                 pliki.Add((file.Name, file.Id));
             }
             FoldersDownloadCompleted?.Invoke();
+            await Task.Delay(3000);
             return pliki;
 
         }
