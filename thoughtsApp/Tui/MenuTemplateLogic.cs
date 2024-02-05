@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Collections.Specialized;
 using thoughtsApp;
 using Newtonsoft.Json.Converters;
+using System.Security.AccessControl;
 
 namespace thoughtsApp.Tui
 {
@@ -74,6 +75,7 @@ namespace thoughtsApp.Tui
                     RunNotesInfoMenu();
                     break;
                 case 4:
+
                     break;
                 case 5:
                     RunExpressionMenu();
@@ -122,72 +124,22 @@ namespace thoughtsApp.Tui
         }
         public async Task RunExpressionMenu()
         {
-            List<(string functionArgument, string option)> options = new List<(string functionArgument, string option)>();
-
             var notesInformation = MenuLogic.GetMenuAndNotesInfo();
             while (!notesInformation.IsCompleted)
                 WaitingAnimation("Downloading notes information");
 
             WriteLine("Wprowadź fraze do wyszukania:");
             string phrase = ReadLine();
-
-            foreach (var note in notesInformation.Result.infos)
-            {
-                bool phraseInNote = false;
-                string actionArgument = "";
-                var noteText = FileManager.GetFileText(note.Id);
-                var sentences = noteText.Result.Split('.').ToList();
-                foreach (var sentence in sentences)
-                {
-                    if (sentence.Contains(phrase))
-                    {
-                        actionArgument += $" - {sentence} \n";
-                        if (!phraseInNote)
-                        {
-                            options.Add((actionArgument, note.Name));
-                            Menu menu = new Menu(phrase, display, options.ToArray());
-                            menu.Run();
-                            phraseInNote = true;
-                        }
-                        else
-                        {
-                            options.Add((actionArgument, note.Name));
-                            Menu menu = new Menu(phrase, display, options.ToArray());
-                            menu.Run();
-                        }
-                        //refresh menu
-                    }
-                }
-            }
+            var phraseMenuTask = MenuLogic.GetPhraseMenu(display,phrase,notesInformation.Result.infos);
+            while (!phraseMenuTask.IsCompleted)
+                WaitingAnimation("Przeszukiwanie notatek");
+            var result = phraseMenuTask.Result;
+            var option = result.menu.Run();
+            if (option == result.length)
+                return;
+            FileViewer viewer = new FileViewer(notesInformation.Result.infos, option);
+            viewer.Run();
         }
-        public static void display(string text) { WriteLine($"{text}"); }
-        public async Task<string> GetPhraseSentence(string phrase,string noteId)
-        {
-            var noteText = await FileManager.GetFileText(noteId);
-            return "";
-
-        }
+        public static void display(string text) { WriteLine($"{text.Trim()}"); }
     }
-    
 }
-
-
-//case mode.FindExpression:
-//   WriteLine("Insert phrase you want to find.");s
-//   string phrase = ReadLine();
-//   foreach (var note in NoteInformation)
-//   {
-//       var noteText = await FileManager.GetFileText(note.id);
-//       var sentences = noteText.Split('.').ToList();
-//       foreach (var sentence in sentences)
-//       {
-//           if (sentence.Contains(phrase))
-//           {
-//           }
-//       }
-//   }
-//   //List<(string option, Action function)> options = new List<(string option, Action function)>();
-//   //options.Add(($"", dupa));
-//   //Menu menu = new Menu("asdf", ("asdf", dupa); 
-
-//   break;

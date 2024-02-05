@@ -55,6 +55,32 @@ namespace thoughtsApp.Tui
             options.Add(("","Go back"));
             return (new Menu("Choose folder",emptyAction, options.ToArray()), (folderInfo));
         }
+        public static async Task<(Menu menu,int length)> GetPhraseMenu(Action<string> action,string phrase,List<(string Name, string Id)>infos) 
+        {
+            List<(string functionArgument, string option)> options = new List<(string functionArgument, string option)>();
+            foreach (var note in infos)
+            {
+                bool phraseInNote = false;
+                string actionArgument = "";
+                var noteText = await FileManager.GetFileText(note.Id);
+                var sentences = noteText.Split('.').ToList();
+                foreach (var sentence in sentences)
+                {
+                    if (sentence.Contains(phrase))
+                    {
+                        actionArgument += $"- {sentence.Trim()}\n";
+                        if (!phraseInNote)
+                        {
+                            phraseInNote = true;
+                        }
+                    }
+                }
+                options.Add((actionArgument, note.Name));
+            }
+            options.Add(("", "Go back"));
+            Menu menu = new Menu(phrase, action, options.ToArray());
+            return (menu,options.Count);
+        }
         public static async Task<(Menu menu, List<(string Name, string Id)> infos)> GetMenuAndNotesInfo()
         {
             var notesInfo = await FileManager.GetNotesInfoFromDrive();
