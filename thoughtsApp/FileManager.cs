@@ -2,22 +2,8 @@
 using Google.Apis.Drive.v3;
 using Google.Apis.Services;
 using Google.Apis.Upload;
-using Microsoft.VisualBasic;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace thoughtsApp
 {
@@ -27,13 +13,7 @@ namespace thoughtsApp
         public static event Action DownloadCompleted;
         public static event Action FoldersDownloadStarted;
         public static event Action FoldersDownloadCompleted;
-        //public static void Initialize()
-        //{
-        //    if (!Directory.Exists(FileConfig.FullPath))
-        //    {
-        //        Directory.CreateDirectory(FileConfig.FullPath);
-        //    }
-        //}
+
         public static string[] getFiles(string dirPath)
         {
             var files = Directory.GetFiles(dirPath);
@@ -58,38 +38,38 @@ namespace thoughtsApp
 
             File.AppendAllText(path + $"/{GetDateTimeName("note")}", description);
         }
-        public static async void UploadNotesToGoogleDrive(string localDirPath, string folderId)
-        {
+        //public static async void UploadNotesToGoogleDrive(string localDirPath, string folderId)
+        //{
 
-            var service = googleService();
-            string[] files = getFiles(localDirPath);
+        //    var service = googleService();
+        //    string[] files = getFiles(localDirPath);
 
-            foreach (var file in files)
-            {
-                Console.WriteLine(file);
-                var fileMetaData = new Google.Apis.Drive.v3.Data.File()
-                {
-                    Name = Path.GetFileName(file),
-                    Parents = new List<string> { folderId }
-                };
+        //    foreach (var file in files)
+        //    {
+        //        Console.WriteLine(file);
+        //        var fileMetaData = new Google.Apis.Drive.v3.Data.File()
+        //        {
+        //            Name = Path.GetFileName(file),
+        //            Parents = new List<string> { folderId }
+        //        };
 
-                using (var stream = new FileStream(file, FileMode.Open, FileAccess.Read))
-                {
-                    var request = service.Files.Create(fileMetaData, stream, "test/plain");
-                    request.Fields = "*";
-                    var results = await request.UploadAsync(CancellationToken.None);
+        //        using (var stream = new FileStream(file, FileMode.Open, FileAccess.Read))
+        //        {
+        //            var request = service.Files.Create(fileMetaData, stream, "test/plain");
+        //            request.Fields = "*";
+        //            var results = await request.UploadAsync(CancellationToken.None);
 
-                    if (results.Status == UploadStatus.Failed)
-                    {
-                        Console.WriteLine($"Error uploading file: {results.Exception.Message}");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"File with id: {request.ResponseBody.Id} has been uploaded.");
-                    }
-                }
-            }
-        }
+        //            if (results.Status == UploadStatus.Failed)
+        //            {
+        //                Console.WriteLine($"Error uploading file: {results.Exception.Message}");
+        //            }
+        //            else
+        //            {
+        //                Console.WriteLine($"File with id: {request.ResponseBody.Id} has been uploaded.");
+        //            }
+        //        }
+        //    }
+        //}
         public static async Task UpdateNoteToGoogleDrive(string fileId, string text)
         {
             string encryptedText = Encryptor.Encrypt(text, FileConfig.encryptionKey);
@@ -176,41 +156,41 @@ namespace thoughtsApp
             string encryptedText = Encryptor.Decrypt(tekst, FileConfig.encryptionKey);
             return encryptedText;
         }
-        public static async Task DownloadAllNotesJson(string folderId, string combinedNotes)
-        {
-            if (!File.Exists(combinedNotes))
-            {
-                File.Create(combinedNotes);
-            }
-            JObject data = new JObject();//GetJsonObject(combinedNotes);//GetJsonObject(combinedNotes);
-            data["data"] = new JArray();
-            JArray array = (JArray)data["data"];
+        //public static async Task DownloadAllNotesJson(string folderId, string combinedNotes)
+        //{
+        //    if (!File.Exists(combinedNotes))
+        //    {
+        //        File.Create(combinedNotes);
+        //    }
+        //    JObject data = new JObject();//GetJsonObject(combinedNotes);//GetJsonObject(combinedNotes);
+        //    data["data"] = new JArray();
+        //    JArray array = (JArray)data["data"];
 
-            DownloadStarted?.Invoke();
-            var service = googleService();
-            var request = service.Files.List();
-            request.Q = $"'{folderId}' in parents";
-            var files = request.Execute();
+        //    DownloadStarted?.Invoke();
+        //    var service = googleService();
+        //    var request = service.Files.List();
+        //    request.Q = $"'{folderId}' in parents";
+        //    var files = request.Execute();
 
-            foreach (var file in files.Files)
-            {
-                var requestFile = service.Files.Get(file.Id);
-                using (var stream = new MemoryStream())
-                {
-                    requestFile.Download(stream);
-                    stream.Position = 0;
-                    using (StreamReader reader = new StreamReader(stream))
-                    {
-                        string fileText = reader.ReadToEnd();
-                        string encryptedText = Encryptor.Decrypt(fileText, FileConfig.encryptionKey);
-                        JObject newNote = createNoteObj(file.Name, encryptedText);
-                        array.Add(newNote);
-                    }
-                }
-            }
-            File.WriteAllText(combinedNotes, data.ToString());
-            DownloadCompleted?.Invoke();
-        }
+        //    foreach (var file in files.Files)
+        //    {
+        //        var requestFile = service.Files.Get(file.Id);
+        //        using (var stream = new MemoryStream())
+        //        {
+        //            requestFile.Download(stream);
+        //            stream.Position = 0;
+        //            using (StreamReader reader = new StreamReader(stream))
+        //            {
+        //                string fileText = reader.ReadToEnd();
+        //                string encryptedText = Encryptor.Decrypt(fileText, FileConfig.encryptionKey);
+        //                JObject newNote = createNoteObj(file.Name, encryptedText);
+        //                array.Add(newNote);
+        //            }
+        //        }
+        //    }
+        //    File.WriteAllText(combinedNotes, data.ToString());
+        //    DownloadCompleted?.Invoke();
+        //}
         public static JObject createNoteObj(string name, string text)
         {
             JObject newNote = new JObject
@@ -220,17 +200,17 @@ namespace thoughtsApp
             };
             return newNote;
         }
-        public static JObject GetJsonObject(string jsonResourceName)
-        {
+        //public static JObject GetJsonObject(string jsonResourceName)
+        //{
 
-            using (StreamReader reader = new StreamReader(jsonResourceName))
-            {
+        //    using (StreamReader reader = new StreamReader(jsonResourceName))
+        //    {
 
-                string content = reader.ReadToEnd();
-                JObject jobject = JObject.Parse(content);
-                return jobject;
-            }
-        }
+        //        string content = reader.ReadToEnd();
+        //        JObject jobject = JObject.Parse(content);
+        //        return jobject;
+        //    }
+        //}
         public static async Task<List<(string name, string Id)>> getCurrentFolders()
         {
             string folderId = "1y00Xd9fVkm7GeDF5gYspTKRP1nER9ldG";
