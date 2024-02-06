@@ -18,5 +18,8 @@ namespace thoughtsApp
         public static readonly string journalFolder = "1z4kHf255o0KWCRAF8RptnKAGSIQ3EH9o";
         public static readonly string mainFolder = "1y00Xd9fVkm7GeDF5gYspTKRP1nER9ldG";
         public static readonly string combinedNotes = Path.Combine(projectDirectory, @"FileFolder");
+        // editable variables
+        public static string folderId = null;
+        public static string folderName = null;
     }
 }
