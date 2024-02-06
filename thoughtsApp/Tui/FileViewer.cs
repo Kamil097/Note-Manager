@@ -20,14 +20,26 @@ namespace thoughtsApp.Tui
         private int ModeIndex;
 
         private bool WasNoteChanged;
+
+        private string Phrase;
        
-        public FileViewer(List<(string name, string id)> noteInformation, int noteIndex)
+        public FileViewer(List<(string name, string id)> noteInformation, int noteIndex, string phrase)
         {
             NoteInformation = noteInformation;
             NoteIndex = noteIndex;
             ModeList = new List<mode> {mode.Update, mode.Delete };
             ModeIndex = 0;
             WasNoteChanged = true;
+            Phrase = phrase;    
+        }
+        private void DisplayText(string noteText) 
+        {
+            if (string.IsNullOrEmpty(Phrase))
+                WriteLine($"{NoteInformation[NoteIndex].name}\n{noteText}\nSelected mode: {ModeList[ModeIndex]}");
+            else
+            {
+                
+            }
         }
         private async Task<string> DownloadText() 
         {
@@ -40,25 +52,7 @@ namespace thoughtsApp.Tui
         {
             WriteLine();
         }
-        private async Task ModeSwitch(string fileText) 
-        {
-            Clear();
-            switch (ModeList[ModeIndex])
-            {
-                case mode.Update:
-                    WriteLine("Welcome to note editor, insert text you want to append to your note (sadly you can't edit it completely xd)");
-                    string text = ReadLine();
-                    var updating = FileManager.UpdateNoteToGoogleDrive(NoteInformation[NoteIndex].id,fileText +" " + text);
-                    while (!updating.IsCompleted)
-                        Visuals.WaitingAnimation("Updating note");
-                    break;
-                case mode.Delete:
-                    var deleting = FileManager.DeleteNoteFromGoogleDrive(NoteInformation[NoteIndex].id);
-                    while (!deleting.IsCompleted)
-                        Visuals.WaitingAnimation("Deleting note");
-                    break;
-            }        
-        }
+
         public async Task Run()
         {
             var noteText = "";
@@ -70,7 +64,7 @@ namespace thoughtsApp.Tui
                 if(WasNoteChanged)
                     noteText = await DownloadText();
 
-                WriteLine($"{NoteInformation[NoteIndex].name}\n{noteText}\nSelected mode: {ModeList[ModeIndex]}");
+                DisplayText(noteText);
 
                 ConsoleKeyInfo keyInfo = ReadKey(true);
                 keyPressed = keyInfo.Key;
@@ -112,6 +106,25 @@ namespace thoughtsApp.Tui
                     break;
                 }
             } while (keyPressed != ConsoleKey.Escape);
+        }
+        private async Task ModeSwitch(string fileText)
+        {
+            Clear();
+            switch (ModeList[ModeIndex])
+            {
+                case mode.Update:
+                    WriteLine("Welcome to note editor, insert text you want to append to your note (sadly you can't edit it completely xd)");
+                    string text = ReadLine();
+                    var updating = FileManager.UpdateNoteToGoogleDrive(NoteInformation[NoteIndex].id, fileText + " " + text);
+                    while (!updating.IsCompleted)
+                        Visuals.WaitingAnimation("Updating note");
+                    break;
+                case mode.Delete:
+                    var deleting = FileManager.DeleteNoteFromGoogleDrive(NoteInformation[NoteIndex].id);
+                    while (!deleting.IsCompleted)
+                        Visuals.WaitingAnimation("Deleting note");
+                    break;
+            }
         }
     }
 }

@@ -13,7 +13,8 @@ namespace thoughtsApp.Tui
             ("","2. Upload text from file."),
             ("","3. View thoughts explorer."),
             ("","4. View random thought."),
-            ("","5. Find given expression.")
+            ("","5. Find given expression."),
+            ("","Go back.")
         }
         );
         public static Menu InsertFromFileMenu = new Menu("Uplaod your thought!", MenuLogic.emptyAction,new (string functionArgument, string option)[]  {

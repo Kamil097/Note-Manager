@@ -75,7 +75,8 @@ namespace thoughtsApp.Tui
                         }
                     }
                 }
-                options.Add((actionArgument, note.Name));
+                if(phraseInNote)
+                    options.Add((actionArgument, note.Name));
             }
             options.Add(("", "Go back"));
             Menu menu = new Menu(phrase, action, options.ToArray());

@@ -80,6 +80,8 @@ namespace thoughtsApp.Tui
                 case 5:
                     RunExpressionMenu();
                     break;
+                case 6:
+                    return;
             }
             RunMainMenu();
         }
