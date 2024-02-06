@@ -75,7 +75,7 @@ namespace thoughtsApp.Tui
                     RunNotesInfoMenu();
                     break;
                 case 4:
-
+                    MenuLogic.RandomFileViewer();
                     break;
                 case 5:
                     RunExpressionMenu();

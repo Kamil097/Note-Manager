@@ -116,6 +116,15 @@ namespace thoughtsApp.Tui
                 }
             }
         }
+        public static async Task RandomFileViewer()
+        {
+            var list = FileManager.GetNotesInfoFromDrive();
+            while (!list.IsCompleted)
+                Visuals.WaitingAnimation("Choosing a perfect note");
+            int note = new Random().Next(0, list.Result.Count - 1);
+            FileViewer viewer = new FileViewer(list.Result, note);
+            viewer.Run();
+        }
         public static void emptyAction(string text) {}
     }
 }
