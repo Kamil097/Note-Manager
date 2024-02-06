@@ -123,8 +123,29 @@ namespace thoughtsApp.Tui
             while (!list.IsCompleted)
                 Visuals.WaitingAnimation("Choosing a perfect note");
             int note = new Random().Next(0, list.Result.Count - 1);
-            FileViewer viewer = new FileViewer(list.Result, note);
+            FileViewer viewer = new FileViewer(list.Result, note,"");
             viewer.Run();
+        }
+        public static void ReadSentenceWithColoredExpression(string sentence, string expression)
+        {
+            int startIndex = 0;
+            while (startIndex < sentence.Length)
+            {
+                int wordIndex = sentence.IndexOf(expression, startIndex);
+                if (wordIndex != -1)
+                {
+                    Console.Write(sentence.Substring(startIndex, wordIndex - startIndex));
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.Write(expression);
+                    Console.ResetColor();
+                    startIndex = wordIndex + expression.Length;
+                }
+                else
+                {
+                    Console.Write(sentence.Substring(startIndex));
+                    break;
+                }
+            }
         }
         public static void emptyAction(string text) {}
     }

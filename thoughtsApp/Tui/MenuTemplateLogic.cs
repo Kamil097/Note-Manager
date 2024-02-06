@@ -95,7 +95,7 @@ namespace thoughtsApp.Tui
             int option = result.menu.Run();
             if (option == result.infos.Count)
                 return;
-            FileViewer viewer = new FileViewer(result.infos, option);
+            FileViewer viewer = new FileViewer(result.infos, option, "");
             viewer.Run();
             RunNotesInfoMenu();
         }
@@ -136,10 +136,10 @@ namespace thoughtsApp.Tui
             while (!phraseMenuTask.IsCompleted)
                 WaitingAnimation("Przeszukiwanie notatek");
             var result = phraseMenuTask.Result;
-            var option = result.menu.Run();
+            var option = result.menu.Run()+1;
             if (option == result.length)
                 return;
-            FileViewer viewer = new FileViewer(notesInformation.Result.infos, option);
+            FileViewer viewer = new FileViewer(notesInformation.Result.infos, option,phrase);
             viewer.Run();
         }
         public static void display(string text) { WriteLine($"{text.Trim()}"); }
