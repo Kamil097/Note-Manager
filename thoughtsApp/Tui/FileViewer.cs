@@ -38,7 +38,13 @@ namespace thoughtsApp.Tui
                 WriteLine($"{NoteInformation[NoteIndex].name}\n{noteText}\nSelected mode: {ModeList[ModeIndex]}");
             else
             {
-                
+                var sentences = noteText.Split('.');
+                foreach (var sentence in sentences)
+                {
+                    if (!string.IsNullOrEmpty(sentence))
+                        MenuLogic.ReadSentenceWithColoredExpression($"{sentence}.",Phrase);
+                }
+                Console.WriteLine($"\nSelected mode: { ModeList[ModeIndex]}");
             }
         }
         private async Task<string> DownloadText() 
