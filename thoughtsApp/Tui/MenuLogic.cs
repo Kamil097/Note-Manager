@@ -53,7 +53,7 @@ namespace thoughtsApp.Tui
                 options.Add(("",$"{i + 1}. {folderInfo[i].name}"));
             }
             options.Add(("","Go back"));
-            return (new Menu("Choose folder",emptyAction, options.ToArray()), (folderInfo));
+            return (new Menu(@"Choose folder", emptyAction, options.ToArray()), (folderInfo));
         }
         public static async Task<(Menu menu,int length)> GetPhraseMenu(Action<string> action,string phrase,List<(string Name, string Id)>infos) 
         {

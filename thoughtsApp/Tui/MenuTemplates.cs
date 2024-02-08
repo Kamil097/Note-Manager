@@ -8,7 +8,14 @@ namespace thoughtsApp.Tui
 {
     public static class MenuTemplates
     {
-        public static Menu MainMenu = new Menu("Thoughts app.",MenuLogic.emptyAction, new (string functionArgument, string option)[]  {
+        public static Menu MainMenu = new Menu(
+            @"
+  /\/\   __ _(_)_ __    _ __ ___   ___ _ __  _   _ 
+ /    \ / _` | | '_ \  | '_ ` _ \ / _ | '_ \| | | |
+/ /\/\ | (_| | | | | | | | | | | |  __| | | | |_| |
+\/    \/\__,_|_|_| |_| |_| |_| |_|\___|_| |_|\__,_|              
+",
+            MenuLogic.emptyAction, new (string functionArgument, string option)[]  {
             ("","1. Upload your thought."),
             ("","2. Upload text from file."),
             ("","3. View thoughts explorer."),
@@ -21,7 +28,16 @@ namespace thoughtsApp.Tui
             ("","1. Insert path."),
             ("","2. Choose .txt file."),
         });
-        public static Menu InitialActionMenu = new Menu("Choose what you wanna do:", MenuLogic.emptyAction, new (string functionArgument, string option)[]  {
+        public static Menu InitialActionMenu = new Menu(@"
+  _______ _                       _     _            
+ |__   __| |                     | |   | |           
+    | |  | |__   ___  _   _  __ _| |__ | |_ ___ _ __ 
+    | |  | '_ \ / _ \| | | |/ _` | '_ \| __/ _ \ '__|
+    | |  | | | | (_) | |_| | (_| | | | | ||  __/ |   
+    |_|  |_| |_|\___/ \__,_|\__, |_| |_|\__\___|_|   
+                             __/ |                   
+                            |___/     
+", MenuLogic.emptyAction, new (string functionArgument, string option)[]  {
             ("","1. Manage notes"),
             ("","2. Create folder"),
             ("","3. Delete folder")
