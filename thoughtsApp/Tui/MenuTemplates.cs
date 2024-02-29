@@ -21,6 +21,8 @@ namespace thoughtsApp.Tui
             ("","3. View thoughts explorer."),
             ("","4. View random thought."),
             ("","5. Find given expression."),
+            ("","6. testing"),
+            ("","7. testing"),
             ("","Go back.")
         }
         );

@@ -81,9 +81,42 @@ namespace thoughtsApp.Tui
                     RunExpressionMenu();
                     break;
                 case 6:
+                    BufferEditor.Run("testing testing testing testing testing testing testing testing testing testing testing testing testing testing testing testing testing testing testing ");
+                    break;
+                case 7:
+                    test2();
+                    break;
+                case 8:
+
                     return;
             }
             RunMainMenu();
+        }
+       
+        public void test2() 
+        {
+            Console.WriteLine("Wpisuj tekst. Jeśli wpiszesz 'x', coś się stanie.");
+
+            while (true)
+            {
+                ConsoleKeyInfo keyInfo = Console.ReadKey();
+                char keyChar = keyInfo.KeyChar;
+
+                //Console.WriteLine(); // Przejście do nowej linii po każdym wpisie
+
+                if (keyChar == 'x')
+                {
+                    Console.WriteLine("Wpisałeś 'x', coś się dzieje!");
+                    // Tutaj możesz wykonać dodatkowe akcje
+                    break; // Możesz usunąć break, jeśli nie chcesz zakończyć pętli
+                }
+                //else
+                //{
+                //    Console.Write(keyInfo.Key);
+                //}
+            }
+
+            Console.WriteLine("Koniec programu.");
         }
         public async Task RunNotesInfoMenu() 
         {
