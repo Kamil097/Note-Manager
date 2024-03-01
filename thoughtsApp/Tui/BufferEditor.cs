@@ -34,13 +34,13 @@ namespace thoughtsApp.Tui
 
                 if (key.Key == ConsoleKey.Backspace && editedText.Length > 0)
                 {
-                    editedText.Remove(left + top * WindowWidth-1, 1);
+                    editedText.Remove(left + top * WindowWidth - 1, 1);
                     Clear();
                     SetCursorPosition(0, CursorTop);
                     Write(editedText.ToString());
                     SetCursorPosition(left - 1, top);
                 }
-                else if (key.Key == ConsoleKey.RightArrow && (top < maxIndex.maxRow || maxIndex.maxCol > left-1))
+                else if (key.Key == ConsoleKey.RightArrow && (top < maxIndex.maxRow || maxIndex.maxCol > left - 1))
                 {
                     if (WindowWidth - 1 == left)
                         SetCursorPosition(0, top + 1);
@@ -49,11 +49,19 @@ namespace thoughtsApp.Tui
                 }
                 else if (key.Key == ConsoleKey.LeftArrow && left > 0)
                 {
-                    SetCursorPosition(left-1, top);
+                    SetCursorPosition(left - 1, top);
                 }
                 else if (key.Key == ConsoleKey.LeftArrow && top > 0)
                 {
                     SetCursorPosition(WindowWidth - 1, top - 1);
+                }
+                else if (key.Key == ConsoleKey.DownArrow && top < maxIndex.maxRow)
+                {
+                    SetCursorPosition(left, top + 1);
+                }
+                else if (key.Key == ConsoleKey.UpArrow && top > 0)
+                {
+                    SetCursorPosition(left, top - 1);
                 }
                 else if (!char.IsControl(key.KeyChar))
                 {
@@ -64,13 +72,14 @@ namespace thoughtsApp.Tui
                         Clear();
                         SetCursorPosition(0, CursorTop);
                         Write(editedText.ToString());
-                        if(WindowWidth-1 == left)
-                            SetCursorPosition(0, top+1);
+                        if (WindowWidth - 1 == left)
+                            SetCursorPosition(0, top + 1);
                         else
                             SetCursorPosition(left + 1, top);
                     }
-                   
+
                 }
+                
             }
             while (key.Key != ConsoleKey.Enter);
             return editedText.ToString();   
@@ -84,7 +93,7 @@ namespace thoughtsApp.Tui
                 editTextlen -= WindowWidth - 1;
                 result.maxRow++;
             }
-            result.maxCol = editTextlen - 1;
+            result.maxCol = editTextlen - 2;
             return result;
         }
     }
