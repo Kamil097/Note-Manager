@@ -81,13 +81,6 @@ namespace thoughtsApp.Tui
                     RunExpressionMenu();
                     break;
                 case 6:
-                    BufferEditor.Run("testing testing testing testing testing testing testing testing testing testing testing testing testing testing testing testing testing testing testing ");
-                    break;
-                case 7:
-                    test2();
-                    break;
-                case 8:
-
                     return;
             }
             RunMainMenu();

@@ -9,10 +9,15 @@ namespace thoughtsApp.Tui
 {
     public class BufferEditor
     {
-        public static int left { get; set; }
-        public static int top { get; set; }
+        public int left { get; set; }
+        public int top { get; set; }
+        public string input { get; set; }
+        public BufferEditor(string inputText)
+        {
+            this.input = inputText;
+        }
 
-        public static void Run(string input)
+        public string Run()
         {
             SetCursorPosition(0, CursorTop);
             StringBuilder editedText = new StringBuilder(input.Trim());
@@ -68,8 +73,7 @@ namespace thoughtsApp.Tui
                 }
             }
             while (key.Key != ConsoleKey.Enter);
-            WriteLine();
-            WriteLine("Finalny tekst: " + editedText.ToString());
+            return editedText.ToString();   
         }
         private static (int maxRow, int maxCol) GetMaxIndex(string editText)
         {
