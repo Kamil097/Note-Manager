@@ -38,7 +38,11 @@ namespace thoughtsApp.Tui
                     Clear();
                     SetCursorPosition(0, CursorTop);
                     Write(editedText.ToString());
-                    SetCursorPosition(left - 1, top);
+                    if (left == 0)
+                        SetCursorPosition(WindowWidth-1, top - 1);
+                    else
+                        SetCursorPosition(left - 1, top);
+
                 }
                 else if (key.Key == ConsoleKey.RightArrow && (top < maxIndex.maxRow || maxIndex.maxCol > left - 1))
                 {
@@ -57,7 +61,8 @@ namespace thoughtsApp.Tui
                 }
                 else if (key.Key == ConsoleKey.DownArrow && top < maxIndex.maxRow)
                 {
-                    SetCursorPosition(left, top + 1);
+                    if(top!=maxIndex.maxRow-1 || left <= maxIndex.maxCol + 1)
+                        SetCursorPosition(left, top + 1);
                 }
                 else if (key.Key == ConsoleKey.UpArrow && top > 0)
                 {
@@ -67,6 +72,10 @@ namespace thoughtsApp.Tui
                 {
 
                     editedText.Insert(left + top * WindowWidth, key.KeyChar);
+
+                    if (left == WindowWidth - 1)
+                        SetCursorPosition(0,top+1);
+
                     if (left + top * WindowWidth < editedText.Length - 1)
                     {
                         Clear();
@@ -88,12 +97,12 @@ namespace thoughtsApp.Tui
         {
             (int maxRow, int maxCol) result = (0, 0);
             int editTextlen = editText.Length;
-            while (editTextlen > WindowWidth-1)
+            while (editTextlen > WindowWidth)
             {
-                editTextlen -= WindowWidth - 1;
+                editTextlen -= WindowWidth;
                 result.maxRow++;
             }
-            result.maxCol = editTextlen - 2;
+            result.maxCol = editTextlen-1;
             return result;
         }
     }
