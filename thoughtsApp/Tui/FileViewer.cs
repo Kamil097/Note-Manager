@@ -54,11 +54,6 @@ namespace thoughtsApp.Tui
                 Visuals.WaitingAnimation("Downloading note text");
             return text.Result;
         }
-        public static void dupa(string text)
-        {
-            WriteLine();
-        }
-
         public async Task Run()
         {
             var noteText = "";
