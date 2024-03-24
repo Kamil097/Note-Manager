@@ -114,9 +114,9 @@ namespace thoughtsApp.Tui
             switch (ModeList[ModeIndex])
             {
                 case mode.Update:
-                    WriteLine("Welcome to note editor, insert text you want to append to your note (sadly you can't edit it completely xd)");
-                    string text = ReadLine();
-                    var updating = FileManager.UpdateNoteToGoogleDrive(NoteInformation[NoteIndex].id, fileText + " " + text);
+                    BufferEditor buff = new BufferEditor(fileText);
+                    var edited = buff.Run();
+                    var updating = FileManager.UpdateNoteToGoogleDrive(NoteInformation[NoteIndex].id, edited);
                     while (!updating.IsCompleted)
                         Visuals.WaitingAnimation("Updating note");
                     break;
