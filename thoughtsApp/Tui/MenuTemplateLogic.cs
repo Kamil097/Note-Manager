@@ -162,7 +162,7 @@ namespace thoughtsApp.Tui
             while (!phraseMenuTask.IsCompleted)
                 WaitingAnimation("Przeszukiwanie notatek");
             var result = phraseMenuTask.Result;
-            var option = result.menu.Run()+1;
+            var option = result.menu.Run();
             if (option == result.length)
                 return;
             FileViewer viewer = new FileViewer(notesInformation.Result.infos, option,phrase);
