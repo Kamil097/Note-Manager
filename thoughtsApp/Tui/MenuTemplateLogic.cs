@@ -40,12 +40,17 @@ namespace thoughtsApp.Tui
                     break;
                 case 2:
                     WriteLine("Insert folder name:");
-                    var createTask = FileManager.CreateNewFolder(ReadLine().Trim().Replace(" ", "_"));
+                    string name = MenuLogic.InsertText(true);
+                    if (string.IsNullOrEmpty(name))
+                        break;
+                    var createTask = FileManager.CreateNewFolder(name);
                     while (!createTask.IsCompleted)
                         WaitingAnimation("Creating folder");
                     break;
                 case 3:
                     int option2 = result.menu.Run();
+                    if (option2 == result.infos.Count)
+                        break;
                     var deleteTask = FileManager.DeleteNoteFromGoogleDrive(result.infos[option2].Id);
                     while (!deleteTask.IsCompleted)
                         WaitingAnimation("Deleting folder");
@@ -64,7 +69,10 @@ namespace thoughtsApp.Tui
             {
                 case 1:
                     WriteLine("Write your thought");
-                    var task = FileManager.SendNewNote(ReadLine(), "note");
+                    var noteText = MenuLogic.InsertText(false);
+                    if (string.IsNullOrEmpty(noteText))
+                        break;
+                    var task = FileManager.SendNewNote(noteText, "note");
                     while (!task.IsCompleted)
                         WaitingAnimation("Sending new note");
                     break;
@@ -86,31 +94,6 @@ namespace thoughtsApp.Tui
             RunMainMenu();
         }
        
-        public void test2() 
-        {
-            Console.WriteLine("Wpisuj tekst. Jeśli wpiszesz 'x', coś się stanie.");
-
-            while (true)
-            {
-                ConsoleKeyInfo keyInfo = Console.ReadKey();
-                char keyChar = keyInfo.KeyChar;
-
-                //Console.WriteLine(); // Przejście do nowej linii po każdym wpisie
-
-                if (keyChar == 'x')
-                {
-                    Console.WriteLine("Wpisałeś 'x', coś się dzieje!");
-                    // Tutaj możesz wykonać dodatkowe akcje
-                    break; // Możesz usunąć break, jeśli nie chcesz zakończyć pętli
-                }
-                //else
-                //{
-                //    Console.Write(keyInfo.Key);
-                //}
-            }
-
-            Console.WriteLine("Koniec programu.");
-        }
         public async Task RunNotesInfoMenu() 
         {
             var notesInformation = MenuLogic.GetMenuAndNotesInfo();

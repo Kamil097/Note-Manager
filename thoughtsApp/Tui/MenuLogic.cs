@@ -147,6 +147,28 @@ namespace thoughtsApp.Tui
                 }
             }
         }
+        public static string InsertText(bool formatString) 
+        {
+            StringBuilder sb = new StringBuilder();
+            while (true)
+            {
+                ConsoleKeyInfo keyInfo = Console.ReadKey();
+                if (keyInfo.Key == ConsoleKey.Escape)
+                {
+                    return "";
+                }
+                else {
+                    sb.Append(keyInfo.KeyChar);
+                }
+                if (keyInfo.Key == ConsoleKey.Enter)
+                {
+                    if (formatString)
+                        return sb.ToString().Trim().Replace(" ", "_");
+                    else
+                        return sb.ToString();
+                }
+            }
+        }
         public static void emptyAction(string text) {}
     }
 }

@@ -44,7 +44,7 @@ namespace thoughtsApp.Tui
                     if (!string.IsNullOrEmpty(sentence))
                         MenuLogic.ReadSentenceWithColoredExpression($"{sentence}.",Phrase);
                 }
-                Console.WriteLine($"\nSelected mode: { ModeList[ModeIndex]}");
+                WriteLine($"\nSelected mode: { ModeList[ModeIndex]}");
             }
         }
         private async Task<string> DownloadText() 
