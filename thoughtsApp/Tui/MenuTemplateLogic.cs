@@ -39,8 +39,7 @@ namespace thoughtsApp.Tui
                     RunMainMenu();
                     break;
                 case 2:
-                    WriteLine("Insert folder name:");
-                    string name = MenuLogic.InsertText(true);
+                    string name = new BufferEditor("","Insert folder name:").Run().Trim().Replace(" ","_");
                     if (string.IsNullOrEmpty(name))
                         break;
                     var createTask = FileManager.CreateNewFolder(name);
@@ -68,8 +67,7 @@ namespace thoughtsApp.Tui
             switch (mainOption)
             {
                 case 1:
-                    WriteLine("Write your thought");
-                    var noteText = MenuLogic.InsertText(false);
+                    string noteText = new BufferEditor("","Write your thought").Run().Trim();
                     if (string.IsNullOrEmpty(noteText))
                         break;
                     var task = FileManager.SendNewNote(noteText, "note");
@@ -139,9 +137,8 @@ namespace thoughtsApp.Tui
             while (!notesInformation.IsCompleted)
                 WaitingAnimation("Downloading notes information");
 
-            WriteLine("Wprowadź fraze do wyszukania:");
-            string phrase = ReadLine();
-            var phraseMenuTask = MenuLogic.GetPhraseMenu(display,phrase,notesInformation.Result.infos);
+            var phrase = new BufferEditor("", "Insert given phrase:").Run();
+            var phraseMenuTask = MenuLogic.GetPhraseMenu(display,phrase, notesInformation.Result.infos);
             while (!phraseMenuTask.IsCompleted)
                 WaitingAnimation("Przeszukiwanie notatek");
             var result = phraseMenuTask.Result;

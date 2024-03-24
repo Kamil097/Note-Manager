@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -55,10 +56,11 @@ namespace thoughtsApp.Tui
             options.Add(("","Go back"));
             return (new Menu(@"Choose folder", emptyAction, options.ToArray()), (folderInfo));
         }
-        public static async Task<(Menu menu,int length)> GetPhraseMenu(Action<string> action,string phrase,List<(string Name, string Id)>infos) 
+        public static async Task<(Menu menu,int length)> GetPhraseMenu(Action<string> action,string phrase, List<(string Name, string Id)>infos) 
         {
             List<(string functionArgument, string option)> options = new List<(string functionArgument, string option)>();
-            foreach (var note in infos)
+            List<(string Name, string Id)> copy = new List<(string Name, string optionId)>(infos); //we can't iterate over original list if we want to remove items from it
+            foreach (var note in copy)
             {
                 bool phraseInNote = false;
                 string actionArgument = "";
@@ -75,8 +77,12 @@ namespace thoughtsApp.Tui
                         }
                     }
                 }
-                if(phraseInNote)
+                if (phraseInNote)
+                {
                     options.Add((actionArgument, note.Name));
+                }
+                else
+                    infos.Remove(note);
             }
             options.Add(("", "Go back"));
             Menu menu = new Menu(phrase, action, options.ToArray());
@@ -144,28 +150,6 @@ namespace thoughtsApp.Tui
                 {
                     Console.Write(sentence.Substring(startIndex));
                     break;
-                }
-            }
-        }
-        public static string InsertText(bool formatString) 
-        {
-            StringBuilder sb = new StringBuilder();
-            while (true)
-            {
-                ConsoleKeyInfo keyInfo = Console.ReadKey();
-                if (keyInfo.Key == ConsoleKey.Escape)
-                {
-                    return "";
-                }
-                else {
-                    sb.Append(keyInfo.KeyChar);
-                }
-                if (keyInfo.Key == ConsoleKey.Enter)
-                {
-                    if (formatString)
-                        return sb.ToString().Trim().Replace(" ", "_");
-                    else
-                        return sb.ToString();
                 }
             }
         }
