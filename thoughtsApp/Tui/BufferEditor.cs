@@ -21,6 +21,7 @@ namespace thoughtsApp.Tui
 
         public string Run()
         {
+            var maxheight = WindowHeight;
             SetCursorPosition(0, CursorTop);
             StringBuilder editedText = new StringBuilder(input.Trim());
             ConsoleKeyInfo key;
