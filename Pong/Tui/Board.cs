@@ -12,22 +12,27 @@ namespace Pong.Tui
         private Platform P1;
         private Platform P2;
         private Ball Ball;
+        private int[][] grid;
         private int Score1 { get; set; }
         private int Score2 { get; set; }
         private int Height => WindowHeight-1;
         private int Width => WindowWidth-1;
-       
+        public Board()
+        {
+           //this.grid = new int[1,8] { { 1, 1, 1, 1, 1, 1, 1, 1 } };
+        }
+
         public void Run()
         {
             Initialize();
-            Thread ListeningThread = new Thread(()=>KeyListener());
+            Thread ListeningThread = new Thread(() => KeyListener());
             ListeningThread.Start();
 
             do
             {
                 GenerateBoard();
                 Clear();
-                var bounce = Ball.CalculateBall(Width, Height);
+                var bounce = Ball.CalculateBall(Width, Height,grid);
                 if (bounce)
                 {
                     if ((bounce && Ball.x == 0) && (Ball.y > P1.LowerCorner || Ball.y < P1.UpperCorner)) {
@@ -62,7 +67,7 @@ namespace Pong.Tui
         {
             P1 = new Platform(Height / 2);
             P2 = new Platform(Height / 2);
-            Ball = new Ball(Width/2,Height / 2);
+            Ball = new Ball(Width / 2,Height / 2);
         }
         public void GenerateBoard()
         {
