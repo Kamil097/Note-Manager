@@ -23,11 +23,13 @@ namespace Pong.Tui
         }
         public bool CalculateBall(int width, int height) 
         {
-            this.x += RightLeft;
-            this.y += UpDown;
+            this.x += RightLeft * RandomizeSpeed(5);  
+            this.y +=  UpDown * RandomizeSpeed(3);
+            ManageOverBounce(width, height);
+
             var bounce = false;
             if (x == 0) {
-                RightLeft = 1; bounce = true;
+                RightLeft = 1; bounce = true; 
             }
             else if (x == width) { bounce = true;
                 RightLeft = -1;
@@ -38,7 +40,21 @@ namespace Pong.Tui
             if (y == height) {
                 UpDown = -1;
             }
+
+
             return bounce;
+        }
+        private void ManageOverBounce(int width, int height) 
+        {
+            if (this.x > width) this.x = width;
+            else if (this.x < 0) this.x = 0;
+            if (this.y > height) this.y = height;
+            else if (this.y < 0) this.y = 0; 
+        }
+        private int RandomizeSpeed(int maxSpeed) 
+        {
+            Random rnd = new Random();
+            return rnd.Next(0, maxSpeed);
         }
         
     }

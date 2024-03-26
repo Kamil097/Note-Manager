@@ -30,13 +30,22 @@ namespace Pong.Tui
                 var bounce = Ball.CalculateBall(Width, Height);
                 if (bounce)
                 {
-                    if ((bounce && Ball.x == 0) && (Ball.y > P1.LowerCorner || Ball.y < P1.UpperCorner))
+                    if ((bounce && Ball.x == 0) && (Ball.y > P1.LowerCorner || Ball.y < P1.UpperCorner)) {
+                        Score2++;
                         break;
-                    if ((bounce && Ball.x == Width) && (Ball.y > P2.LowerCorner || Ball.y < P2.UpperCorner))
+                    }
+                    if ((bounce && Ball.x == Width) && (Ball.y > P2.LowerCorner || Ball.y < P2.UpperCorner)) {
+                        Score1++;
                         break;
+                    }
                 }
             }
             while (true);
+            Clear();
+            WriteLine($"SCORE BOARD\nPLAYER1: {Score1} POINTS\nPLAYER2: {Score2} POINTS\nPress any key to continue...");
+            ReadLine();
+            Run();
+           
         }
         private void KeyListener()
         {
@@ -66,7 +75,7 @@ namespace Pong.Tui
                 PrintBlock(Width, y);
             }
             PrintBlock(Ball.x, Ball.y);
-            Thread.Sleep(20);
+            Thread.Sleep(10);
             while (KeyAvailable)
             { //clears buffor
                 ReadKey(true);
