@@ -12,15 +12,10 @@ namespace Pong.Tui
         private Platform P1;
         private Platform P2;
         private Ball Ball;
-        private int[][] grid;
         private int Score1 { get; set; }
         private int Score2 { get; set; }
         private int Height => WindowHeight-1;
         private int Width => WindowWidth-1;
-        public Board()
-        {
-           //this.grid = new int[1,8] { { 1, 1, 1, 1, 1, 1, 1, 1 } };
-        }
 
         public void Run()
         {
@@ -32,7 +27,7 @@ namespace Pong.Tui
             {
                 GenerateBoard();
                 Clear();
-                var bounce = Ball.CalculateBall(Width, Height,grid);
+                var bounce = Ball.CalculateBall(Width, Height);
                 if (bounce)
                 {
                     if ((bounce && Ball.x == 0) && (Ball.y > P1.LowerCorner || Ball.y < P1.UpperCorner)) {

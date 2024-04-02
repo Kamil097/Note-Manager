@@ -21,7 +21,7 @@ namespace Pong.Tui
             this.UpDown = RightLeft = 1;
             this.speed = 1;
         }
-        public bool CalculateBall(int width, int height, int[][]grid) 
+        public bool CalculateBall(int width, int height) 
         {
             this.x += RightLeft * RandomizeSpeed(5);  
             this.y +=  UpDown * RandomizeSpeed(3);
