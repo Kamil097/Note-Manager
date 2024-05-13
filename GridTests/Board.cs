@@ -10,6 +10,7 @@ namespace Snake
     {
         public int Width { get; set; }
         public int Height { get; set; }
+        public (int, int) apple { get; set; }
         public Board(int width, int height)
         {
             this.Height = height;

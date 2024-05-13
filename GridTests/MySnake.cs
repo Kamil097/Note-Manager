@@ -42,10 +42,10 @@ namespace Snake
             switch (SnakeDirection)
             {
                 case Direction.Up:
-                    y += 1;
+                    y -= 1;
                     break;
                 case Direction.Down:
-                    y -= 1;
+                    y += 1;
                     break;
                 case Direction.Left:
                     x -= 1;
@@ -56,7 +56,6 @@ namespace Snake
             }
             SnakeBody.AddFirst((y, x));
             SnakeBody.Remove(SnakeBody.Last);
-            //_headPosition = (HeadPosition.Width + DirectionX, HeadPosition.Height + DirectionY);
         }
     }
 }

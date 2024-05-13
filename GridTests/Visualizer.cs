@@ -18,21 +18,14 @@ namespace Snake
                 Console.Write(" |");
                 for (int j = 0; j < frame.GetLength(1); j++)
                 {
-                    Console.Write(" " + frame[i,j] + " |");
+                    if (frame[i,j].ToString() == "\0") // default char value
+                        Write("   |");
+                    else
+                        Write(" " + frame[i,j] + " |");
                 }
                 Console.Write("\n\n");
             }
         }
-        public static char[,] GenerateFrame(MySnake snake, Board board)
-        {
-            char[,] matrix = new char[board.Height, board.Width];
-            var node = snake.SnakeBody.First;
-            while(node!=null)
-            {
-                matrix[node.Value.height,node.Value.width] = '#';
-                node = node.Previous;
-            }
-            return matrix;
-        }
+       
     }
 }
