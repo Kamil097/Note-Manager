@@ -1,8 +1,12 @@
 ﻿using Snake;
 
 
-//Visualizer.SnakeAnimation();
-Board board = new Board(9, 5);
+
+
+Board board = new Board(20, 10);
 MySnake snake = new MySnake(MySnake.Speed.Slow);
+Game game = new Game(snake, board);
+game.Run();
+/*
 var frame = Visualizer.GenerateFrame(snake, board);
-Visualizer.GenerateBoard(frame);    
+Visualizer.GenerateBoard(frame);    */

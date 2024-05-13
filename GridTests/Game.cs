@@ -10,24 +10,33 @@ namespace Snake
     {
         private MySnake Snake { get; set; }
         private Board Board { get; set; }
+        public Game(MySnake snake, Board board)
+        {
+            this.Snake = snake;
+            this.Board = board;
+        }
         public void Run()
         {
             Thread ListeningThread = new Thread(() => KeyListener());
-            var frame = Visualizer.GenerateFrame(Snake, Board);
-            Visualizer.GenerateBoard(frame);
-            while (Snake.Alive)
-            {
+            ListeningThread.Start();
+            do
+            {               
+                
+                var frame = Visualizer.GenerateFrame(Snake, Board);
+                Visualizer.GenerateBoard(frame);
                 Thread.Sleep((int)Snake.SnakeSpeed);
+                Snake.Move();
+                DoesCollide();
             }
+            while (Snake.Alive);
         }
-        public bool DoesCollide()
+        public void DoesCollide()
         {
-            
-            if (Snake.HeadPosition.width == Board.Width - 1 || Snake.HeadPosition.width < 0)
-                return true;
-            if (Snake.HeadPosition.height == Board.Height - 1 || Snake.HeadPosition.height < 0)
-                return true;
-            return false;
+
+            if (Snake.HeadPosition.width == Board.Width  || Snake.HeadPosition.width < 0)
+                Snake.Kill();
+            if (Snake.HeadPosition.height == Board.Height  || Snake.HeadPosition.height < 0)
+                Snake.Kill();
         }
         private void KeyListener()
         {
@@ -35,32 +44,28 @@ namespace Snake
             do
             {
                 key = Console.ReadKey(true);
-                ChangeCoords(key);
+                ChangeDirection(key);
             }
             while (key.Key != ConsoleKey.Escape);
         }
-        private void ChangeCoords(ConsoleKeyInfo key)
+        private void ChangeDirection(ConsoleKeyInfo key)
         {
 
             if (key.Key == ConsoleKey.W)
             {
-                Snake.DirectionY = 1;
-                Snake.DirectionX = 0;
+                Snake.SnakeDirection = MySnake.Direction.Up;
             }
             else if (key.Key == ConsoleKey.S)
             {
-                Snake.DirectionY = -1;
-                Snake.DirectionX = 0;
+                Snake.SnakeDirection = MySnake.Direction.Down;
             }
             else if (key.Key == ConsoleKey.A)
             {
-                Snake.DirectionY = 0;
-                Snake.DirectionX = 1;
+                Snake.SnakeDirection = MySnake.Direction.Left;
             }
             else if (key.Key == ConsoleKey.D)
             {
-                Snake.DirectionY = 0;
-                Snake.DirectionX = -1;
+                Snake.SnakeDirection = MySnake.Direction.Right;
             }
         }
         private void PrintBlock(int x, int y)

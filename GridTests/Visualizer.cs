@@ -10,26 +10,9 @@ namespace Snake
 {
     public static class Visualizer
     {
-        public static void SnakeAnimation()
-        {
-            var length = 8;
-            for (int i = 0; i < length; i++)
-            {
-                SetCursorPosition( i, 0);
-                Write("X");
-            }
-            
-            for (int x = 0; x < WindowWidth - 1 - length; x++)
-            {
-                SetCursorPosition(x,0);
-                Write(" ");
-                SetCursorPosition(x+length,0);
-                Write("X");
-                Thread.Sleep(50);
-            }
-        }
         public static void GenerateBoard(char[,] frame)
         {
+            Clear();
             for (int i = 0; i < frame.GetLength(0); i++)
             {
                 Console.Write(" |");
