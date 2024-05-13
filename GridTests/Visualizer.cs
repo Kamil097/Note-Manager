@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Console;
 
-namespace GridTests
+namespace Snake
 {
     public static class Visualizer
     {
@@ -28,16 +28,28 @@ namespace GridTests
                 Thread.Sleep(50);
             }
         }
-        public static void GenerateBoard(Board board)
+        public static void GenerateBoard(char[,] frame)
         {
-            SetCursorPosition(1,0);
-            Write(new string("–"),board.Width);
-            SetCursorPosition(1, board.Height-1);
-            Write(new string("–"), board.Width);
-            SetCursorPosition(0, 1);
-            Write(new string("|\n"), board.Height);
-            //SetCursorPosition(0, );
-            Write(new string("|\n"), board.Height);
+            for (int i = 0; i < frame.GetLength(0); i++)
+            {
+                Console.Write(" |");
+                for (int j = 0; j < frame.GetLength(1); j++)
+                {
+                    Console.Write(" " + frame[i,j] + " |");
+                }
+                Console.Write("\n\n");
+            }
+        }
+        public static char[,] GenerateFrame(MySnake snake, Board board)
+        {
+            char[,] matrix = new char[board.Height, board.Width];
+            var node = snake.SnakeBody.First;
+            while(node!=null)
+            {
+                matrix[node.Value.height,node.Value.width] = '#';
+                node = node.Previous;
+            }
+            return matrix;
         }
     }
 }

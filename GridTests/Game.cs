@@ -1,5 +1,4 @@
-﻿using GridTests;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,12 +8,13 @@ namespace Snake
 {
     public class Game
     {
-        private Snake Snake { get; set; }
+        private MySnake Snake { get; set; }
         private Board Board { get; set; }
         public void Run()
         {
             Thread ListeningThread = new Thread(() => KeyListener());
-            Visualizer.GenerateBoard(Board);
+            var frame = Visualizer.GenerateFrame(Snake, Board);
+            Visualizer.GenerateBoard(frame);
             while (Snake.Alive)
             {
                 Thread.Sleep((int)Snake.SnakeSpeed);
@@ -22,10 +22,10 @@ namespace Snake
         }
         public bool DoesCollide()
         {
-
-            if (Snake.HeadPosition.Width == Board.Width - 1 || Snake.HeadPosition.Width < 0)
+            
+            if (Snake.HeadPosition.width == Board.Width - 1 || Snake.HeadPosition.width < 0)
                 return true;
-            if (Snake.HeadPosition.Height == Board.Height - 1 || Snake.HeadPosition.Height < 0)
+            if (Snake.HeadPosition.height == Board.Height - 1 || Snake.HeadPosition.height < 0)
                 return true;
             return false;
         }

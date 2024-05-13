@@ -14,7 +14,6 @@ namespace Snake
         {
             this.Height = height;
             this.Width = width;
-        }
-        
+        }  
     }
 }

@@ -1,7 +1,8 @@
-﻿using GridTests;
-using Snake;
+﻿using Snake;
 
 
 //Visualizer.SnakeAnimation();
-Board board = new Board(5, 5);
-Visualizer.GenerateBoard(board);    
+Board board = new Board(9, 5);
+MySnake snake = new MySnake(MySnake.Speed.Slow);
+var frame = Visualizer.GenerateFrame(snake, board);
+Visualizer.GenerateBoard(frame);    

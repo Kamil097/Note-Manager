@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Snake
 {
-    public class Snake
+    public class MySnake
     {
         public int DirectionX = 1;
         public int DirectionY = 0;  
@@ -16,24 +16,27 @@ namespace Snake
         public int Length => _length;
         private bool _alive { get; set; }
         public bool Alive => _alive;
-        private (int Width, int Height) _headPosition { get; set; }
-        public (int Width, int Height) HeadPosition => _headPosition;
         private Speed _speed { get; set; }
         public Speed SnakeSpeed => _speed;
+        private LinkedList<(int, int)> _snakeBody;
+        public LinkedList<(int height,int width)> SnakeBody => _snakeBody;
+        public (int height, int width) HeadPosition => (SnakeBody.Last.Value.height, SnakeBody.Last.Value.width);
 
-        public Snake(Speed speed)
+
+        public MySnake(Speed speed)
         {
             this._length = 1;
             this._alive = true;
             this._speed = speed;
-            this._headPosition = (0, 0);
+            this._snakeBody = new LinkedList<(int, int)>(){};
+            _snakeBody.AddFirst((0, 0));
         }
         public void Kill() {
             this._alive = false;
         }
         public void Move()
         {
-            _headPosition = (HeadPosition.Width + DirectionX, HeadPosition.Height + DirectionY);
+            //_headPosition = (HeadPosition.Width + DirectionX, HeadPosition.Height + DirectionY);
         }
     }
 }
