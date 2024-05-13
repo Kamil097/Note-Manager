@@ -75,7 +75,7 @@ namespace Pong.Tui
                 PrintBlock(Width, y);
             }
             PrintBlock(Ball.x, Ball.y);
-            Thread.Sleep(10);
+            Thread.Sleep(50);
             while (KeyAvailable)
             { //clears buffor
                 ReadKey(true);

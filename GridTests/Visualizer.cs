@@ -36,7 +36,7 @@ namespace GridTests
             Write(new string("–"), board.Width);
             SetCursorPosition(0, 1);
             Write(new string("|\n"), board.Height);
-            SetCursorPosition(0, );
+            //SetCursorPosition(0, );
             Write(new string("|\n"), board.Height);
         }
     }

@@ -110,6 +110,8 @@ namespace thoughtsApp.Tui
                 editTextlen -= WindowWidth;
                 result.maxRow++;
             }
+            if(editTextlen > 0)
+                result.maxRow++;
             result.maxCol = editTextlen-1;
             return result;
         }
