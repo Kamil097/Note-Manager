@@ -4,7 +4,7 @@
 
 
 Board board = new Board(20, 10);
-MySnake snake = new MySnake(MySnake.Speed.Slow);
+MySnake snake = new MySnake(MySnake.Speed.Fast);
 Game game = new Game(snake, board);
 game.Run();
 /*

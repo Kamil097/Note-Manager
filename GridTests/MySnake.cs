@@ -17,10 +17,9 @@ namespace Snake
         public int Length => _length;
         private bool _alive { get; set; }
         public bool Alive => _alive;
-      
         private LinkedList<(int, int)> _snakeBody;
         public LinkedList<(int height,int width)> SnakeBody => _snakeBody;
-        public (int height, int width) HeadPosition => (SnakeBody.Last.Value.height, SnakeBody.Last.Value.width);
+        public (int height, int width) HeadPosition => (SnakeBody.First.Value.height, SnakeBody.First.Value.width);
 
 
         public MySnake(Speed speed)
@@ -35,8 +34,14 @@ namespace Snake
         public void Kill() {
             this._alive = false;
         }
-        public void Move()
+        public void Move(bool didEat)
         {
+            var position = CalculateNextPos();
+            SnakeBody.AddFirst(position);
+            if(!didEat)
+                SnakeBody.Remove(SnakeBody.Last);
+        }
+        public (int height, int width) CalculateNextPos() {
             var x = HeadPosition.width;
             var y = HeadPosition.height;
             switch (SnakeDirection)
@@ -54,8 +59,7 @@ namespace Snake
                     x += 1;
                     break;
             }
-            SnakeBody.AddFirst((y, x));
-            SnakeBody.Remove(SnakeBody.Last);
+            return (y, x);
         }
     }
 }

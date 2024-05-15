@@ -25,14 +25,28 @@ namespace Snake
             GenerateApple();
             do
             {               
-                
                 var frame = GenerateFrame();
                 Visualizer.GenerateBoard(frame);
                 Thread.Sleep((int)Snake.SnakeSpeed);
-                Snake.Move();
+                MoveSnake();
                 DoesCollideWall();
             }
             while (Snake.Alive);
+        }
+        public void MoveSnake()
+        {
+            var position = Snake.CalculateNextPos();
+            if (IsSnakeOn(position)) {
+                Snake.Kill();
+            }
+            else if (Apple == position) {
+                Snake.Move(true);
+                GenerateApple();
+            }
+            else {
+                Snake.Move(false);
+            }
+
         }
         public void DoesCollideWall()
         {
@@ -42,8 +56,10 @@ namespace Snake
             if (Snake.HeadPosition.height == Board.Height || Snake.HeadPosition.height < 0)
                 Snake.Kill();
         }
-        public bool IsSnakeOn((int height,int width) cords) {
-            var currentNode = Snake.SnakeBody.Last;
+
+        public bool IsSnakeOn((int height, int width) cords)
+        {
+            var currentNode = Snake.SnakeBody.First;
             while (currentNode != null)
             {
                 if (currentNode.Value.height == cords.height && currentNode.Value.width == cords.width)
@@ -55,13 +71,16 @@ namespace Snake
         public char[,] GenerateFrame()
         {
             char[,] matrix = new char[Board.Height, Board.Width];
-            var node = Snake.SnakeBody.First;
-            while (node != null)
-            {
-                matrix[node.Value.height, node.Value.width] = '#';
-                node = node.Previous;
-            }
             matrix[Apple.height, Apple.width] = 'X';
+            var node = Snake.SnakeBody.First;
+            matrix[node.Value.height, node.Value.width] = 'O';
+            node = node.Next;
+            while (node != null)
+            {   
+                matrix[node.Value.height, node.Value.width] = 'o';
+                node = node.Next;
+            }
+            
             return matrix;
         }
         public void GenerateApple() {
