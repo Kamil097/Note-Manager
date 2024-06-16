@@ -12,7 +12,7 @@ namespace thoughtsApp.Tui
         public int left { get; set; }
         public int top { get; set; }
         public string input { get; set; }
-        public string header { get; set; }  
+        public string header { get; set; }
         public BufferEditor(string inputText, string header)
         {
             this.input = inputText;
@@ -99,6 +99,7 @@ namespace thoughtsApp.Tui
                 
             }
             while (key.Key != ConsoleKey.Enter);
+            Clear();
             return editedText.ToString();   
         }
         private static (int maxRow, int maxCol) GetMaxIndex(string editText)

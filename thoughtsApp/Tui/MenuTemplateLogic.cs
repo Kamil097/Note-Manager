@@ -67,12 +67,7 @@ namespace thoughtsApp.Tui
             switch (mainOption)
             {
                 case 1:
-                    string noteText = new BufferEditor("","Write your thought").Run().Trim();
-                    if (string.IsNullOrEmpty(noteText))
-                        break;
-                    var task = FileManager.SendNewNote(noteText, "note");
-                    while (!task.IsCompleted)
-                        WaitingAnimation("Sending new note");
+                    SendNewNoteMenu();
                     break;
                 case 2:
                     RunInsertFromFileMenu();
@@ -91,7 +86,15 @@ namespace thoughtsApp.Tui
             }
             RunMainMenu();
         }
-       
+        public async Task SendNewNoteMenu() {
+            string noteText = new BufferEditor("", "Write your thought").Run().Trim();
+            if (string.IsNullOrEmpty(noteText))
+                return;
+            string noteTitle = new BufferEditor("note", "Note title:").Run().Trim();
+            var task = FileManager.SendNewNote(noteText, noteTitle);
+            while (!task.IsCompleted)
+                WaitingAnimation("Sending new note");
+        }
         public async Task RunNotesInfoMenu() 
         {
             var notesInformation = MenuLogic.GetMenuAndNotesInfo();

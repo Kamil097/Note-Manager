@@ -45,7 +45,7 @@ namespace thoughtsApp.Tui
                     ForegroundColor = ConsoleColor.White;
                     BackgroundColor = ConsoleColor.Black;
                 }
-                WriteLine($"{prefix} << {currentOption} >>");
+                WriteLine($"{prefix} << {currentOption.Replace(".txt","")} >>");
                 ResetColor();
                 DelegateFunction($"{Infos[i].functionArgument}"); //run delegate
             }

@@ -35,7 +35,7 @@ namespace thoughtsApp.Tui
         private void DisplayText(string noteText) 
         {
             if (string.IsNullOrEmpty(Phrase))
-                WriteLine($"{NoteInformation[NoteIndex].name}\n{noteText}\nSelected mode: {ModeList[ModeIndex]}");
+                WriteLine($"{NoteInformation[NoteIndex].name.Replace(".txt","")}\n{noteText}\nSelected mode: {ModeList[ModeIndex]}");
             else
             {
                 var sentences = noteText.Split('.');
