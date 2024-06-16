@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /thoughtsApp/FileFolder/credentials.json
 /thoughtsApp/FileFolder/credentials.json
+/Reddit_Manager/FileFolder/redditSecrets.json
