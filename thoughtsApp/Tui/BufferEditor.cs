@@ -49,6 +49,20 @@ namespace thoughtsApp.Tui
                         SetCursorPosition(left - 1, top);
 
                 }
+                else if (key.Key == ConsoleKey.Delete && editedText.Length > left)
+                {
+
+                    editedText.Remove(left + (top - 1) * WindowWidth, 1);
+                    Clear();
+                    WriteLine(header);
+                    SetCursorPosition(0, CursorTop);
+                    Write(editedText.ToString());
+                    if (left == 0)
+                        SetCursorPosition(WindowWidth - 1, top - 1);
+                    else
+                        SetCursorPosition(left, top);
+
+                }
                 else if (key.Key == ConsoleKey.RightArrow && (top < maxIndex.maxRow || maxIndex.maxCol > left - 1))
                 {
                     if (WindowWidth - 1 == left)
@@ -80,7 +94,7 @@ namespace thoughtsApp.Tui
 
                     editedText.Insert(left + (top-1) * WindowWidth, key.KeyChar);
 
-                    if (left == WindowWidth - 1)
+                    if (left == WindowWidth-1)
                         SetCursorPosition(0, top + 1);
 
                     if (left + (top-1) * WindowWidth < editedText.Length - 1)
