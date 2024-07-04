@@ -70,11 +70,14 @@ namespace thoughtsApp
         //        }
         //    }
         //}
-        public static async Task UpdateNoteToGoogleDrive(string fileId, string text)
+        public static async Task UpdateNoteToGoogleDrive(string title,string fileId, string text)
         {
             string encryptedText = Encryptor.Encrypt(text, FileConfig.encryptionKey);
             var service = googleService();
-            var fileMetaData = new Google.Apis.Drive.v3.Data.File();
+            var fileMetaData = new Google.Apis.Drive.v3.Data.File()
+            {
+                Name = title
+            };
             var stream = new MemoryStream();
             byte[] textBytes = Encoding.UTF8.GetBytes(encryptedText);
             stream.Write(textBytes, 0, textBytes.Length);

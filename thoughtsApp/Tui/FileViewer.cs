@@ -116,7 +116,8 @@ namespace thoughtsApp.Tui
                 case mode.Update:
                     BufferEditor buff = new BufferEditor(fileText,"Update your note.");
                     var edited = buff.Run();
-                    var updating = FileManager.UpdateNoteToGoogleDrive(NoteInformation[NoteIndex].id, edited);
+                    string noteTitle = new BufferEditor(NoteInformation[NoteIndex].name, "Note title:").Run().Trim();
+                    var updating = FileManager.UpdateNoteToGoogleDrive(noteTitle,NoteInformation[NoteIndex].id, edited);
                     while (!updating.IsCompleted)
                         Visuals.WaitingAnimation("Updating note");
                     break;
